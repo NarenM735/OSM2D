@@ -144,6 +144,7 @@ function handleMovement()
 	y_pos += speed;
 }
 
+
 function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
@@ -177,25 +178,33 @@ function draw()
             j++;
         }
     }
-    
+    console.log("drawing");
+    if(Playerlist!=null){
     for(const player of Playerlist)
     {
 	if(!player)
 	    continue;
 
-	if (player.name == clientID) // skip yourself
-	    continue;
+	// if (player.name == clientID) // skip yourself
+	//     continue;
+
 	
 	drawPlayer(player);
+}
+    }else{
+        let dummy = {x:x_pos, y:y_pos, r:100,g:100, b:255};
+        drawPlayer(dummy);
     }
 
     let self = {};
     
-    for (const b of bullets)
-    {
-	b.update();
-	b.render();
-    }
+    // if(Bulletlist!=null){
+    // for (const b of Bulletlist)
+    // {
+	// // b.update();
+	// b.render();
+    // }
+// }
 
     renderMessage();
 
@@ -212,6 +221,7 @@ function spawnBullet()
 
     var vel_x = dir_x / mag * bullet_speed;
     var vel_y = dir_y / mag * bullet_speed;
+    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
 
     return new Bullet(x_pos, y_pos, vel_x, vel_y);
 }
@@ -220,9 +230,9 @@ function mouseClicked()
 {
     if (mouseButton == LEFT)
     {
-	stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
 	
-	let bullet = spawnBullet();
-	bullets.push(bullet)
+	
+	spawnBullet();
+	
     }
 }
