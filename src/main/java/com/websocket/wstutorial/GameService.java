@@ -46,23 +46,6 @@ public class GameService {
     
  }
 
- public void addBullet(Bullet bullet){
-    // int flag=1;
-    
-    // for (Iterator<Bullet> iterator = bArrayList.iterator(); iterator.hasNext(); ) {
-    //     Bullet value = iterator.next();
-    //     if(value==null){
-    //         iterator.remove();
-    //     }
-    //     else if (value.getname().equals(player.getname())) {
-    //         iterator.remove();
-    //     }
-    // }
-        
-            bArrayList.add(bullet);
-
-}
-
     public void removePlayer(String playerUsername){
 
         players.remove(playerUsername);
@@ -77,6 +60,26 @@ public class GameService {
         //     }
         // }
     }
+
+    
+
+
+ public void addBullet(Bullet bullet){
+    // int flag=1;
+    bArrayList.add(bullet);
+        
+            
+
+}
+
+
+public void nextBullet(){
+    for(Bullet bullet2:bArrayList){
+        bullet2.update();
+
+    }
+
+}
 
 
 }

@@ -79,6 +79,7 @@ document.addEventListener('DOMContentLoaded', function () {
     connect();
 });
 var Playerlist=null;
+var Bulletlist=null;
 let clientID="";
 
 function connect() {
@@ -97,6 +98,9 @@ function connect() {
         // });
         stompClient.subscribe('/topic/gameState', function (message) {
             Playerlist=JSON.parse(message.body);
+        });
+        stompClient.subscribe('/topic/gameBullets', function (message) {
+            Bulletlist=JSON.parse(message.body);
         });
     });
 
@@ -152,7 +156,7 @@ var x_pos = 100;
 var y_pos = 100;
 const speed = 3;
 
-var bullets = new Array();
+
 
 class Bullet {
     constructor(x, y, velx, vely)
@@ -250,15 +254,26 @@ function draw()
     }
 }
 
+    // if(Bulletlist!=null){
+    // for (let b of Bulletlist)
+    // {
+	// // b.update();
+    // // stompClient.send('/ws/gameState',{},JSON.stringify({x: b.getX(),y:b.getY(),velx: b.getVX(), vely:b.getVY()}));
+    // // stompClient.send('/ws/gameState',{},JSON.stringify({x: b.getX(),y:b.getY()}));
+    // // if()
+	// Bulletlist[b].render();
+    // }
 
-    for (const b of bullets)
-    {
-	b.update();
-    // stompClient.send('/ws/gameState',{},JSON.stringify({x: b.getX(),y:b.getY(),velx: b.getVX(), vely:b.getVY()}));
-    // stompClient.send('/ws/gameState',{},JSON.stringify({x: b.getX(),y:b.getY()}));
-    // if()
-	b.render();
+    let j=0;
+    var bullet=null
+    if(Bulletlist!=null){
+        while(j<Bulletlist.length){
+            bullet=Bulletlist[j];
+            circle(bullet.x,bullet.y,7);
+            j++;
+        }
     }
+
 
     fill(100,100,200);
     
@@ -288,6 +303,7 @@ function mouseClicked()
 	var vel_x = dir_x / mag * bullet_speed;
 	var vel_y = dir_y / mag * bullet_speed;
 	
-	bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
+	// bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
+    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
     }
 }

@@ -68,23 +68,27 @@ public class MessageController {
         // return gameService.getPlayerList();
     }
 
-    // //Bullet streaming
-    // @MessageMapping("/gameState")
-    // // @SendTo("/topic/gameState")
-    // public void getBullet(final Bullet bullet1) throws InterruptedException {
-    //         // player1.setname(principal.getName());
-    //        gameService.addBullet(bullet1);
-    //     //    Thread.sleep(20);
+    //Bullet streaming
+    @MessageMapping("/gameBullets")
+    // @SendTo("/topic/gameState")
+    public void getBullet(Bullet bullet1) throws InterruptedException {
+            // player1.setname(principal.getName());
+           gameService.addBullet(bullet1);
+        //    Thread.sleep(20);
         
-    //     //function
+        //function
         
-    //     // return gameService.getPlayerList();
-    // }
+        // return gameService.getPlayerList();
+    }
+
+
+
     
-    @Scheduled(fixedRate = 10)
+    @Scheduled(fixedRate = 16)
     public void sendLocation() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
-        // simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getBulletList());
+        simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+        gameService.nextBullet();
     }
 
     

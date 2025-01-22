@@ -3,8 +3,8 @@ package com.websocket.wstutorial;
 public class Bullet {
     private int x;
     private int y;
-    // private int velx;
-    // private int vely;
+    private int velx;
+    private int vely;
 
     
     Bullet(){}
@@ -12,11 +12,15 @@ public class Bullet {
     Bullet(int x,int y,int velx,int vely){
         this.x=x;
         this.y=y;
-        // this.velx=velx;
-        // this.vely=vely;
+        this.velx=velx;
+        this.vely=vely;
     }
 
 
+    public void update(){
+        x+=velx;
+        y+=vely;
+    }
     public int getx(){
         return x;
     }
@@ -26,13 +30,13 @@ public class Bullet {
         return y;
     }
     
-    // public int getvelx(){
-    //     return velx;
-    // }
+    public int getvelx(){
+        return velx;
+    }
     
-    // public int getvely(){
-    //     return vely;
-    // }
+    public int getvely(){
+        return vely;
+    }
 
     public void setx(int x){
         this.x=x;
@@ -42,11 +46,11 @@ public class Bullet {
         this.y=y;
     }
     
-    // public void setvelx(int velx){
-    //     this.velx=velx;
-    // }
+    public void setvelx(int velx){
+        this.velx=velx;
+    }
     
-    // public void setvely(int vely){
-    //     this.vely=vely;
-    // }
+    public void setvely(int vely){
+        this.vely=vely;
+    }
 }
