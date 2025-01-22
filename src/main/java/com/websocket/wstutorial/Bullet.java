@@ -1,56 +1,57 @@
 package com.websocket.wstutorial;
 
 public class Bullet {
-    private int x;
-    private int y;
-    private int velx;
-    private int vely;
+    private float x;
+    private float y;
+    private float velx;
+    private float vely;
+    
 
     
     Bullet(){}
 
-    Bullet(int x,int y,int velx,int vely){
+    Bullet(float x,float y,float velx,float vely){
         this.x=x;
         this.y=y;
         this.velx=velx;
         this.vely=vely;
     }
 
-
+    
     public void update(){
         x+=velx;
         y+=vely;
     }
-    public int getx(){
+    public float getx(){
         return x;
     }
 
     
-    public int gety(){
+    public float gety(){
         return y;
     }
     
-    public int getvelx(){
+    public float getvelx(){
         return velx;
     }
     
-    public int getvely(){
+    public float getvely(){
         return vely;
     }
 
-    public void setx(int x){
+    public void setx(float x){
         this.x=x;
     }
     
-    public void sety(int y){
+    public void sety(float y){
         this.y=y;
     }
     
-    public void setvelx(int velx){
+    public void setvelx(float velx){
         this.velx=velx;
     }
     
-    public void setvely(int vely){
+    public void setvely(float vely){
         this.vely=vely;
     }
 }

@@ -74,6 +74,7 @@ public class MessageController {
     public void getBullet(Bullet bullet1) throws InterruptedException {
             // player1.setname(principal.getName());
            gameService.addBullet(bullet1);
+           simpMessagingTemplate.convertAndSend("/topic/gameBulletSingle", bullet1);
         //    Thread.sleep(20);
         
         //function
@@ -87,11 +88,18 @@ public class MessageController {
     @Scheduled(fixedRate = 16)
     public void sendLocation() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
-        simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+        
         gameService.nextBullet();
     }
 
     
+    
+    @Scheduled(fixedRate = 2000)
+    public void sendBulletList() throws InterruptedException{
+        simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+        
+        
+    }
 
 
 
