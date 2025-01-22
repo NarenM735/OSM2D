@@ -5,9 +5,17 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
     connect();
 });
-var Playerlist=null;
-var Bulletlist=null;
+
+var players=[];
+var bullets=[];
 let clientID="";
+
+
+var x_pos = 100;
+var y_pos = 100;
+const speed = 3;
+
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -17,14 +25,15 @@ function connect() {
         console.log('Connected: ' + frame);
         onConnected();
         stompClient.subscribe('/topic/gameState', function (message) {
-            Playerlist=JSON.parse(message.body);
+            players=JSON.parse(message.body);
         });
         stompClient.subscribe('/topic/gameBullets', function (message) {
-            Bulletlist=JSON.parse(message.body);
+            bullets=JSON.parse(message.body);
         });
     });
 
 }
+
 let flag=0;
 function onConnected() {
     flag=1;
@@ -72,52 +81,6 @@ function charIsDown(charachter)
     return keyIsDown(charachter.toUpperCase().charCodeAt(0))
 }
 
-var x_pos = 100;
-var y_pos = 100;
-const speed = 3;
-
-
-
-class Bullet {
-    constructor(x, y, velx, vely)
-    {
-	this.x = x;
-	this.y = y;
-	this.velx = velx;
-	this.vely = vely;
-    }
-
-    getX(){
-        return this.x;
-    }
-
-    getY(){
-        return this.y;
-    }
-    getVX(){
-        return this.velx;
-    }
-    getVY(){
-        return this.vely;
-    }
-    
-    update()
-    {
-	this.x += this.velx;
-	this.y += this.vely;
-
-	
-    }
-
-
-
-    render()
-    {
-	fill(255, 100, 100);
-	circle(this.x, this.y, 7);
-    }
-}
-
 function renderMessage()
 {
     if (frameCount%60==0 && message_time > 0)
@@ -135,13 +98,13 @@ function renderMessage()
 function handleMovement()
 {
     if (charIsDown("a"))
-	x_pos -= speed;
+	self.x_pos -= speed;
     if (charIsDown("d"))
-	x_pos += speed;
+	self.x_pos += speed;
     if (charIsDown("w"))
-	y_pos -= speed;
+	self.y_pos -= speed;
     if (charIsDown("s"))
-	y_pos += speed;
+	self.y_pos += speed;
 }
 
 
@@ -151,13 +114,17 @@ function drawPlayer(player)
     circle(player.x, player.y, 20);
 }
 
+function updateBullet(bullet)
+{
+    bullet.x += bullet.vel_x;
+    bullet.y += bullet.vel_y;
+}
+
 function draw()
 {
     background(220);
 
-    
-    handleMovement();
-    
+    handleMovement();    
     
     fill(100,100,255);
     
@@ -169,43 +136,27 @@ function draw()
     }
 
 
-    let j=0;
-    var bullet=null
-    if(Bulletlist!=null){
-        while(j<Bulletlist.length){
-            bullet=Bulletlist[j];
-            circle(bullet.x,bullet.y,7);
-            j++;
-        }
+    for(const bullet of bullets)
+    {
+	updateBullets();
+        circle(bullet.x,bullet.y,7);
     }
+    
     console.log("drawing");
-    if(Playerlist!=null){
-    for(const player of Playerlist)
+
+    for(const player of players)
     {
 	if(!player)
 	    continue;
-
-	// if (player.name == clientID) // skip yourself
-	//     continue;
-
+	
+	if (player.name == clientID) // skip yourself
+	    continue;
 	
 	drawPlayer(player);
-}
-    }else{
-        let dummy = {x:x_pos, y:y_pos, r:100,g:100, b:255};
-        drawPlayer(dummy);
     }
-
-    let self = {};
     
-    // if(Bulletlist!=null){
-    // for (const b of Bulletlist)
-    // {
-	// // b.update();
-	// b.render();
-    // }
-// }
-
+    drawPlayer(self);
+    
     renderMessage();
 
 }
@@ -223,16 +174,13 @@ function spawnBullet()
     var vel_y = dir_y / mag * bullet_speed;
     stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
 
-    return new Bullet(x_pos, y_pos, vel_x, vel_y);
+    bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y));
 }
 
 function mouseClicked()
 {
     if (mouseButton == LEFT)
     {
-	
-	
 	spawnBullet();
-	
     }
 }
