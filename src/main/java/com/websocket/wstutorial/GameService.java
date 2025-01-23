@@ -76,7 +76,7 @@ public class GameService {
 public void nextBullet(){
     for(Bullet bullet2:bArrayList){
         bullet2.update();
-
+        // bullet2.checkBounds();
     }
 
 }

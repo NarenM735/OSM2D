@@ -15,6 +15,10 @@ var x_pos = 100;
 var y_pos = 100;
 const speed = 3;
 
+var bulletEntity=null;
+
+
+
 var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
 
 function connect() {
@@ -30,11 +34,18 @@ function connect() {
         stompClient.subscribe('/topic/gameBullets', function (message) {
             bullets=JSON.parse(message.body);
         });
+        stompClient.subscribe('/topic/gameBulletSingle', function (message) {
+            bulletEntity=JSON.parse(message.body);
+        });
     });
 
 }
 
-let flag=0;
+
+var flag=0;
+
+
+
 function onConnected() {
     flag=1;
     // Subscribe to the Public Topic
@@ -81,30 +92,20 @@ function charIsDown(charachter)
     return keyIsDown(charachter.toUpperCase().charCodeAt(0))
 }
 
-function renderMessage()
-{
-    if (frameCount%60==0 && message_time > 0)
-    {
-	fill(100,100,200);
-	textSize(20);
-	text(show_msg, 5, 25);
-	message_time --;
-    }
-    if(message_time==0){
-	show_msg="";
-    }
-}
 
 function handleMovement()
 {
     if (charIsDown("a"))
-	self.x_pos -= speed;
+	x_pos -= speed;
     if (charIsDown("d"))
-	self.x_pos += speed;
+	x_pos += speed;
     if (charIsDown("w"))
-	self.y_pos -= speed;
+	y_pos -= speed;
     if (charIsDown("s"))
-	self.y_pos += speed;
+	y_pos += speed;
+
+
+
 }
 
 
@@ -116,8 +117,11 @@ function drawPlayer(player)
 
 function updateBullet(bullet)
 {
-    bullet.x += bullet.vel_x;
-    bullet.y += bullet.vel_y;
+
+    bullet.x += bullet.velx;
+    bullet.y += bullet.vely;
+
+
 }
 
 function draw()
@@ -135,35 +139,76 @@ function draw()
 			)
     }
 
+     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
 
-    for(const bullet of bullets)
-    {
-	updateBullets();
-        circle(bullet.x,bullet.y,7);
+
+    if(bulletEntity!=null){
+        bullets.push(bulletEntity);
+        bulletEntity=null;
     }
-    
+    if (bullets.length!=0)
+    {
+        for(const bullet of bullets)
+        {   
+            circle(bullet.x,bullet.y,7);
+	        updateBullet(bullet);
+            
+        }
+    }
     console.log("drawing");
-
-    for(const player of players)
-    {
-	if(!player)
-	    continue;
-	
-	if (player.name == clientID) // skip yourself
-	    continue;
-	
-	drawPlayer(player);
-    }
-    
+    if(players.length!=0){
+            for(const player of players)
+            {
+            if(!player)
+                continue;
+            
+            if (player.name == clientID) // skip yourself
+                continue;
+            
+            drawPlayer(player);
+            }
+        }
     drawPlayer(self);
     
-    renderMessage();
+    // renderMessage();
+
+    
+    if (frameCount%60==0 && message_time > 0)  //this is shit ; not working as intended
+        {
+        fill(100,100,200); 
+        textSize(20);
+        text(show_msg, 5, 25);
+        message_time --;
+        }
+        if(message_time==0){
+        show_msg="shit"; //this is shit ; not working as intended
+        }
+
+
+
+
 
 }
 
 const bullet_speed = 10;
 
 function spawnBullet()
+
+{
+    var dir_x = mouseX - x_pos;
+    var dir_y = mouseY - y_pos;
+
+    var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
+
+    var vel_x = dir_x / mag * bullet_speed;
+    var vel_y = dir_y / mag * bullet_speed;
+    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+
+    bullets.push({x:x_pos,y:y_pos,velx:vel_x,vely:vel_y});
+}
+
+function mouseClicked()
+
 {
     var dir_x = mouseX - x_pos;
     var dir_y = mouseY - y_pos;
