@@ -85,7 +85,7 @@ public class MessageController {
 
 
     
-    @Scheduled(fixedRate = 16)
+    @Scheduled(fixedRate = 14)
     public void sendLocation() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
         
