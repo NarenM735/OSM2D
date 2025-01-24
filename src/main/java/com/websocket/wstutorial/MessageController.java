@@ -82,6 +82,9 @@ public class MessageController {
         // return gameService.getPlayerList();
     }
 
+    
+
+
 
 
     
@@ -89,6 +92,10 @@ public class MessageController {
     public void sendLocation() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
         
+        ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape("Hit Registered"));
+        if(gameService.bulletReg().getname()!="null"){
+        simpMessagingTemplate.convertAndSendToUser(gameService.bulletReg().getname(), "/queue/bullet",rm);
+        }
         gameService.nextBullet();
     }
 

@@ -78,8 +78,8 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
     connect();
 });
-var Playerlist=null;
-var Bulletlist=null;
+var players=[];
+var bullets=[];
 let clientID="";
 
 
@@ -104,13 +104,16 @@ function connect() {
         //     showMessage(JSON.parse(message.body).content);
         // });
         stompClient.subscribe('/topic/gameState', function (message) {
-            Playerlist=JSON.parse(message.body);
+            players=JSON.parse(message.body);
         });
         stompClient.subscribe('/topic/gameBullets', function (message) {
-            Bulletlist=JSON.parse(message.body);
+            bullets=JSON.parse(message.body);
         });
         stompClient.subscribe('/topic/gameBulletSingle', function (message) {
             bulletEntity=JSON.parse(message.body);
+        });
+        stompClient.subscribe('/user/queue/bullet', function (message) {
+            showMessage(JSON.parse(message.body).content);
         });
     });
 
@@ -133,7 +136,7 @@ function onConnected() {
     // connectingElement.classList.add('hidden');
 }
 
-let message_time = 5    ;
+var message_time = 5    ;
 var show_msg = "CONNECTING...";
 
 function showMessage(msg)
@@ -197,7 +200,7 @@ function draw()
 {
     background(220);
 
-    let i=0;
+    
 
     if (charIsDown("a"))
 	x_pos -= speed;
@@ -250,15 +253,16 @@ function draw()
     // renderMessage();
 
     
+    fill(100,100,200); 
+    textSize(20);
+    text(show_msg, 5, 25);
+
     if (frameCount%60==0 && message_time > 0)  //this is shit ; not working as intended
         {
-        fill(100,100,200); 
-        textSize(20);
-        text(show_msg, 5, 25);
         message_time --;
         }
         if(message_time==0){
-        show_msg="shit"; //this is shit ; not working as intended
+        show_msg=" "; //this is shit ; not working as intended
         }
 }
 
@@ -282,13 +286,7 @@ function mouseClicked()
 {
     if (mouseButton == LEFT)
     {
-	var dir_x = mouseX - x_pos;
-	var dir_y = mouseY - y_pos;
-
-	var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
-
-	var vel_x = dir_x / mag * bullet_speed;
-	var vel_y = dir_y / mag * bullet_speed;
+        spawnBullet();
 	
 	// bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
     stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
