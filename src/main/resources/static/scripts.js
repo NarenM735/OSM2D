@@ -1,76 +1,3 @@
-// var stompClient = null;
-// var notificationCount = 0;
-
-// $(document).ready(function() {
-//     console.log("Index page is ready");
-//     connect();
-
-//     $("#send").click(function() {
-//         sendMessage();
-//     });
-
-//     $("#send-private").click(function() {
-//         sendPrivateMessage();
-//     });
-
-//     $("#notifications").click(function() {
-//         resetNotificationCount();
-//     });
-// });
-
-// function connect() {
-//     var socket = new SockJS('/our-websocket');
-//     stompClient = Stomp.over(socket);
-//     stompClient.connect({}, function (frame) {
-//         console.log('Connected: ' + frame);
-//         updateNotificationDisplay();
-//         stompClient.subscribe('/topic/messages', function (message) {
-//             showMessage(JSON.parse(message.body).content);
-//         });
-
-//         stompClient.subscribe('/user/topic/private-messages', function (message) {
-//             showMessage(JSON.parse(message.body).content);
-//         });
-
-//         stompClient.subscribe('/topic/global-notifications', function (message) {
-//             notificationCount = notificationCount + 1;
-//             updateNotificationDisplay();
-//         });
-
-//         stompClient.subscribe('/user/topic/private-notifications', function (message) {
-//             notificationCount = notificationCount + 1;
-//             updateNotificationDisplay();
-//         });
-//     });
-// }
-
-// function showMessage(message) {
-//     $("#messages").append("<tr><td>" + message + "</td></tr>");
-// }
-
-// function sendMessage() {
-//     console.log("sending message");
-//     stompClient.send("/ws/message", {}, JSON.stringify({'messageContent': $("#message").val()}));
-// }
-
-// function sendPrivateMessage() {
-//     console.log("sending private message");
-//     stompClient.send("/ws/private-message", {}, JSON.stringify({'messageContent': $("#private-message").val()}));
-// }
-
-// function updateNotificationDisplay() {
-//     if (notificationCount == 0) {
-//         $('#notifications').hide();
-//     } else {
-//         $('#notifications').show();
-//         $('#notifications').text(notificationCount);
-//     }
-// }
-
-// function resetNotificationCount() {
-//     notificationCount = 0;
-//     updateNotificationDisplay();
-// }
 
 var stompClient = null;
 
@@ -86,6 +13,7 @@ let clientID="";
 var x_pos = 100;
 var y_pos = 100;
 const speed = 3;
+
 var bulletEntity=null;
 var playerHp=100;
 var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,hp:playerHp};
@@ -98,13 +26,6 @@ function connect() {
         clientID = frame.headers["user-name"];
         console.log('Connected: ' + frame);
         onConnected();
-        // stompClient.subscribe('/topic/playerJoin', function (message) {
-        //     showMessage(JSON.parse(message.body).content);
-        // });
-
-        // stompClient.subscribe('/user/topic/private-messages', function (message) {
-        //     showMessage(JSON.parse(message.body).content);
-        // });
         stompClient.subscribe('/topic/gameState', function (message) {
             players=JSON.parse(message.body);
         });
@@ -122,7 +43,11 @@ function connect() {
 
 }
 
+
 var flag=0;
+
+
+
 function onConnected() {
     flag=1;
     // Subscribe to the Public Topic
@@ -131,9 +56,9 @@ function onConnected() {
     });
     // Tell your username to the server
     stompClient.send('/ws/playerJoin',
-        {},
-        JSON.stringify({messageContent: "hello"})
-    )
+		     {},
+		     JSON.stringify({messageContent: "hello"})
+		    )
 
     stompClient.send('/ws/gameState',
         {},
@@ -173,9 +98,6 @@ function charIsDown(charachter)
     return keyIsDown(charachter.toUpperCase().charCodeAt(0))
 }
 
-// function renderMessage()
-// {
-// }
 
 function handleMovement()
 {
@@ -188,6 +110,8 @@ function handleMovement()
     if (charIsDown("s"))
 	y_pos += speed;
 
+
+
 }
 
 
@@ -199,8 +123,11 @@ function drawPlayer(player)
 
 function updateBullet(bullet)
 {
+
     bullet.x += bullet.velx;
     bullet.y += bullet.vely;
+
+
 }
 
 function draw()
@@ -272,11 +199,17 @@ function draw()
         if(message_time==0 ){
         show_msg=self.hp; 
         }
+
+
+
+
+
 }
 
 const bullet_speed = 10;
 
 function spawnBullet()
+
 {
     var dir_x = mouseX - x_pos;
     var dir_y = mouseY - y_pos;
@@ -288,6 +221,21 @@ function spawnBullet()
     stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
 
     bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
+}
+
+function mouseClicked()
+
+{
+    var dir_x = mouseX - x_pos;
+    var dir_y = mouseY - y_pos;
+
+    var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
+
+    var vel_x = dir_x / mag * bullet_speed;
+    var vel_y = dir_y / mag * bullet_speed;
+    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+
+    bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y));
 }
 
 function mouseClicked()
