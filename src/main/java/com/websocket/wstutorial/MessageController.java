@@ -92,16 +92,17 @@ public class MessageController {
     public void sendLocation() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
         
-        ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape("Hit Registered"));
-        if(gameService.bulletReg().getname()!="null"){
-        simpMessagingTemplate.convertAndSendToUser(gameService.bulletReg().getname(), "/queue/bullet",rm);
+        Player p =gameService.bulletReg();
+        if(p.getname()!="null"){
+            ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
+        simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
         }
         gameService.nextBullet();
     }
 
     
     
-    @Scheduled(fixedRate = 2000)
+    @Scheduled(fixedRate = 1000)
     public void sendBulletList() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
         

@@ -87,7 +87,9 @@ var x_pos = 100;
 var y_pos = 100;
 const speed = 3;
 var bulletEntity=null;
-var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
+var playerHp=100;
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,hp:playerHp};
+
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -113,6 +115,7 @@ function connect() {
             bulletEntity=JSON.parse(message.body);
         });
         stompClient.subscribe('/user/queue/bullet', function (message) {
+            playerHp=JSON.parse(message.body).content;
             showMessage(JSON.parse(message.body).content);
         });
     });
@@ -132,6 +135,10 @@ function onConnected() {
         JSON.stringify({messageContent: "hello"})
     )
 
+    stompClient.send('/ws/gameState',
+        {},
+        JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
+       )
 
     // connectingElement.classList.add('hidden');
 }
@@ -141,7 +148,7 @@ var show_msg = "CONNECTING...";
 
 function showMessage(msg)
 {
-    message_time = 3;
+    
     show_msg = msg;
     
 }
@@ -216,10 +223,10 @@ function draw()
     if(flag==1){
 	stompClient.send('/ws/gameState',
 			 {},
-			 JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue})
+			 JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
 			)
     }
-     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
+     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,hp:playerHp};
 
 
     if(bulletEntity!=null){
@@ -243,8 +250,9 @@ function draw()
                 continue;
             
             if (player.name == clientID) // skip yourself
+              {  playerHp = player.hp;
                 continue;
-            
+                }
             drawPlayer(player);
             }
         }
@@ -257,12 +265,12 @@ function draw()
     textSize(20);
     text(show_msg, 5, 25);
 
-    if (frameCount%60==0 && message_time > 0)  //this is shit ; not working as intended
+    if (frameCount%60==0 && message_time > 0)  
         {
         message_time --;
         }
-        if(message_time==0){
-        show_msg=" "; //this is shit ; not working as intended
+        if(message_time==0 ){
+        show_msg=self.hp; 
         }
 }
 
@@ -277,9 +285,9 @@ function spawnBullet()
 
     var vel_x = dir_x / mag * bullet_speed;
     var vel_y = dir_y / mag * bullet_speed;
-    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+    stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
 
-    bullets.push({x:x_pos,y:y_pos,velx:vel_x,vely:vel_y});
+    bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
 }
 
 function mouseClicked()
@@ -289,6 +297,6 @@ function mouseClicked()
         spawnBullet();
 	
 	// bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
-    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+    // stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
     }
 }

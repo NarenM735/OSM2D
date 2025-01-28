@@ -80,7 +80,7 @@ public void nextBullet(){
     }
 
 }
-private final Player dummy = new Player(0,0,"null");
+private final Player dummy = new Player(0,0,"null",100);
 //bullet collision with player
 public Player bulletReg(){
     
@@ -89,13 +89,18 @@ public Player bulletReg(){
     float xb;
     float yb;
     for(Map.Entry<String,Player> mEle : players.entrySet()){
-            for(Bullet bullet : bArrayList){
+        
+        for (Iterator<Bullet> iterator = bArrayList.iterator(); iterator.hasNext(); ) {
+            Bullet bullet = iterator.next();
+            // for(Bullet bullet : bArrayList){
                 xp=mEle.getValue().getx();
                 yp=mEle.getValue().gety();       
                 xb=bullet.getx();
                 yb=bullet.gety();
 
                 if(13.5 >= Math.hypot(xb-xp, yb-yp) ){
+                    mEle.getValue().bulletHit();
+                    iterator.remove();
                     return mEle.getValue();           
                 }
             }
