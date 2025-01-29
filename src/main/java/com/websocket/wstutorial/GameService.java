@@ -33,21 +33,21 @@ public class GameService {
     }
 
 //Optimization is needed here (remove null value from list)
-    public void updatePlayer(Player player){
+//     public void updatePlayer(Player player){
         
-        // for (Iterator<Player> iterator = pArrayList.iterator(); iterator.hasNext(); ) {
-        //     Player value = iterator.next();
-        //     if(value==null){
-        //         iterator.remove();
-        //     }
-        //     else if (value.getname().equals(player.getname())) {
-        //         iterator.remove();
-        //     }
-        // }
+//         // for (Iterator<Player> iterator = pArrayList.iterator(); iterator.hasNext(); ) {
+//         //     Player value = iterator.next();
+//         //     if(value==null){
+//         //         iterator.remove();
+//         //     }
+//         //     else if (value.getname().equals(player.getname())) {
+//         //         iterator.remove();
+//         //     }
+//         // }
             
-        players.get(player.getname()).update(player);
+//         players.get(player.getname()).update(player);
     
- }
+//  }
 
     public void removePlayer(String playerUsername){
 
@@ -80,7 +80,7 @@ public void nextBullet(){
     }
 
 }
-private final Player dummy = new Player(0,0,"null",100);
+private final Player dummy = new Player(0,0,"null",100,0,0);
 //bullet collision with player
 public Player bulletReg(){
     
@@ -112,5 +112,11 @@ public Player bulletReg(){
 
 }
 
+    public void predictPos(){
+        for(Map.Entry<String,Player> mEle : players.entrySet()){
+            mEle.getValue().update();
+        }
+        
+    }
 
 }

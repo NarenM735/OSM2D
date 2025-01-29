@@ -2,6 +2,9 @@ package com.websocket.wstutorial;
 
 import com.websocket.wstutorial.dto.Message;
 import com.websocket.wstutorial.dto.ResponseMessage;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.event.EventListener;
 import org.springframework.messaging.handler.annotation.MessageMapping;
@@ -22,6 +25,7 @@ public class MessageController {
     @Autowired
     private NotificationService notificationService;
     private SimpMessagingTemplate simpMessagingTemplate;
+    private final Logger LOG = LoggerFactory.getLogger(MessageController.class);
 
 
     private GameService gameService;
@@ -75,6 +79,7 @@ public class MessageController {
             // player1.setname(principal.getName());
            gameService.addBullet(bullet1);
            simpMessagingTemplate.convertAndSend("/topic/gameBulletSingle", bullet1);
+            // LOG.info("bullet received",bullet1);
         //    Thread.sleep(20);
         
         //function
@@ -85,19 +90,27 @@ public class MessageController {
     
 
 
-
-
     
-    @Scheduled(fixedRate = 14)
+    @Scheduled(fixedRate = 50)
+    public void sendPlayer() throws InterruptedException{
+        
+    simpMessagingTemplate.
+    convertAndSend("/topic/gameState", gameService.getPlayerList());
+    }
+
+    @Scheduled(fixedRate = 16)
     public void sendLocation() throws InterruptedException{
-        simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
+        
         
         Player p =gameService.bulletReg();
         if(p.getname()!="null"){
             ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
         simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
+        simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+        
         }
         gameService.nextBullet();
+        gameService.predictPos();
     }
 
     

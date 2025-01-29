@@ -1,3 +1,7 @@
+var last_xspeed=0;
+var last_yspeed=0;
+const bullet_speed = 10;
+const frame_time = 16.666666666666666666666666666667;
 
 var stompClient = null;
 
@@ -12,6 +16,8 @@ let clientID="";
 
 var x_pos = 100;
 var y_pos = 100;
+var x_speed = 0;
+var y_speed = 0;
 const speed = 3;
 
 var bulletEntity=null;
@@ -115,45 +121,66 @@ function handleMovement()
 }
 
 
+var last_time = millis();
+
 function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
     circle(player.x, player.y, 20);
+    console.log(player.x,player.y)
 }
 
 function updateBullet(bullet)
 {
 
-    bullet.x += bullet.velx;
-    bullet.y += bullet.vely;
+    let elapsed = millis() - last_time;
+
+    bullet.x += bullet.velx * (elapsed / frame_time);
+    bullet.y += bullet.vely * (elapsed / frame_time);
 
 
 }
+
+
 
 function draw()
 {
     background(220);
 
-    
+    x_speed = 0;
+    y_speed = 0;
 
-    if (charIsDown("a"))
-	x_pos -= speed;
-    if (charIsDown("d"))
-	x_pos += speed;
-    if (charIsDown("w"))
-	y_pos -= speed;
-    if (charIsDown("s"))
-	y_pos += speed;
+    let elapsed = millis() - last_time;
+    let multiplier = elapsed / frame_time;
+    if (charIsDown("a")) {
+	    x_pos -= speed * multiplier; 
+        x_speed = -speed;
+    }if (charIsDown("d")) {
+	    x_pos += speed * multiplier;
+        x_speed = speed;
+    }
+    if (charIsDown("w")) {
+	    y_pos -= speed * multiplier;
+        y_speed = -speed;
+    }
+    if (charIsDown("s")) {
+	    y_pos += speed * multiplier;
+        y_speed = speed;
+    }
     
     fill(100,100,255);
     
-    if(flag==1){
+    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed)){
+        
 	stompClient.send('/ws/gameState',
 			 {},
-			 JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
+			 JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
 			)
+            
     }
-     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,hp:playerHp};
+    last_xspeed=x_speed;
+    last_yspeed=y_speed;
+     self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp};
 
 
     if(bulletEntity!=null){
@@ -176,13 +203,20 @@ function draw()
             if(!player)
                 continue;
             
+            
             if (player.name == clientID) // skip yourself
-              {  playerHp = player.hp;
+            //   {  playerHp = player.hp;
                 continue;
-                }
+                // }
+
+            let elapsed = millis() - last_time;
+            player.x += player.velx * (elapsed / frame_time);
+            player.y += player.vely * (elapsed / frame_time);
+    
             drawPlayer(player);
             }
         }
+    
     drawPlayer(self);
     
     // renderMessage();
@@ -201,12 +235,11 @@ function draw()
         }
 
 
-
+    last_time = millis();
 
 
 }
 
-const bullet_speed = 10;
 
 function spawnBullet()
 
@@ -220,23 +253,23 @@ function spawnBullet()
     var vel_y = dir_y / mag * bullet_speed;
     stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
 
-    bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
+    // bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
 }
 
-function mouseClicked()
+// function mouseClicked()
 
-{
-    var dir_x = mouseX - x_pos;
-    var dir_y = mouseY - y_pos;
+// {
+//     var dir_x = mouseX - x_pos;
+//     var dir_y = mouseY - y_pos;
 
-    var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
+//     var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
 
-    var vel_x = dir_x / mag * bullet_speed;
-    var vel_y = dir_y / mag * bullet_speed;
-    stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+//     var vel_x = dir_x / mag * bullet_speed;
+//     var vel_y = dir_y / mag * bullet_speed;
+//     stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
 
-    bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y));
-}
+//     bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y));
+// }
 
 function mouseClicked()
 {

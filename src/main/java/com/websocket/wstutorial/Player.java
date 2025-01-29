@@ -10,20 +10,22 @@ public class Player {
 
     static Random random = new Random();
 
-    private int x,y;
+    private float x,y;
     private float r,g,b;
-    // private int velx,vely;
+    private float velx,vely;
     private String name;
-    private int hp;
+    private float hp;
     Player(){
 
     }
 
-    Player(int x,int y,String name,int hp){
+    Player(float x,float y,String name,float hp,float velx,float vely ){
         this.x=x;
         this.y=y;
         this.name=name;
         this.hp =hp;
+        this.velx =velx;
+        this.vely=vely;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
@@ -31,28 +33,38 @@ public class Player {
         this.b = random.nextInt()/2f;
     }
 
-    public void update(Player p)
+    public void update()
     {
-        x = p.getx();
-        y = p.gety();
-        // if(p.getHp()!=0)
-        // hp = p.getHp();
+        x += velx;
+        y += vely;
     }
 
-    public int bulletHit(){
+
+    public float bulletHit(){
         hp-=25;
         return hp;
     }
     
-    public int getx(){
+    
+
+    public float getx(){
         return x;
     }
     
-    public int getHp(){
+    
+    public float getvelx(){
+        return velx;
+    }
+    
+    public float getvely(){
+        return vely;
+    }
+    
+    public float getHp(){
         return hp;
     }
 
-    public void setHp(int Hp){
+    public void setHp(float Hp){
 
         hp=Hp;
     }
@@ -62,7 +74,7 @@ public class Player {
     }
 
     
-    public int gety(){
+    public float gety(){
         return y;
     }
 
@@ -96,12 +108,24 @@ public class Player {
         this.b = b;
     }
 
-    public void setx(int x){
+    public void setx(float x){
         
         this.x=x;
 
     }
 
+    
+    public void setvely(float vely){
+        
+        this.vely=vely;
+
+    }
+    
+    public void setvelx(float velx){
+        
+        this.velx=velx;
+
+    }
 
     public void setname(String name){
         
@@ -109,7 +133,7 @@ public class Player {
 
     }
 
-    public void sety(int y){
+    public void sety(float y){
         
         this.y=y;
 
