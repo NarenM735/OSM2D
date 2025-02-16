@@ -92,23 +92,21 @@ public class MessageController {
 
     
     @Scheduled(fixedRate = 50)
-    public void sendPlayer() throws InterruptedException{
+    public void sendPlayerList() throws InterruptedException{
         
-    simpMessagingTemplate.
-    convertAndSend("/topic/gameState", gameService.getPlayerList());
+	simpMessagingTemplate. convertAndSend("/topic/gameState", gameService.getPlayerList());
     }
 
     @Scheduled(fixedRate = 16)
     public void sendLocation() throws InterruptedException{
-        
-        
-        Player p =gameService.bulletReg();
+
+        Player p = gameService.bulletReg();
         if(p.getname()!="null"){
             ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
-        simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
-        simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
-        
+            simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
+            simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
         }
+	
         gameService.nextBullet();
         gameService.predictPos();
     }

@@ -15,13 +15,13 @@ public class GameService {
 
     public GameService()
     {
-        players = new HashMap<>();
+	players = new HashMap<>();
     }
 
-    public ArrayList<Player> getPlayerList(){
+    public ArrayList<Player> getPlayerList()
+    {
         return new ArrayList<>(players.values());
     }
-
     
     public ArrayList<Bullet> getBulletList(){
         return bArrayList;
@@ -29,27 +29,28 @@ public class GameService {
 
     public void addPlayer(Player p)
     {
-        players.put(p.getname(), p);
+	players.put(p.getname(), p);
     }
 
-//Optimization is needed here (remove null value from list)
-//     public void updatePlayer(Player player){
+    //Optimization is needed here (remove null value from list)
+    //     public void updatePlayer(Player player){
         
-//         // for (Iterator<Player> iterator = pArrayList.iterator(); iterator.hasNext(); ) {
-//         //     Player value = iterator.next();
-//         //     if(value==null){
-//         //         iterator.remove();
-//         //     }
-//         //     else if (value.getname().equals(player.getname())) {
-//         //         iterator.remove();
-//         //     }
-//         // }
+    //         // for (Iterator<Player> iterator = pArrayList.iterator(); iterator.hasNext(); ) {
+    //         //     Player value = iterator.next();
+    //         //     if(value==null){
+    //         //         iterator.remove();
+    //         //     }
+    //         //     else if (value.getname().equals(player.getname())) {
+    //         //         iterator.remove();
+    //         //     }
+    //         // }
             
-//         players.get(player.getname()).update(player);
+    //         players.get(player.getname()).update(player);
     
-//  }
+    //  }
 
-    public void removePlayer(String playerUsername){
+    public void removePlayer(String playerUsername)
+    {
 
         players.remove(playerUsername);
 
@@ -64,35 +65,33 @@ public class GameService {
         // }
     }
 
- public void addBullet(Bullet bullet){
-    // int flag=1;
-    bArrayList.add(bullet);
-        
-            
-
-}
-
-//checks bullet bounds and deletes it 
-public void nextBullet(){
-    for(Bullet bullet2:bArrayList){
-        bullet2.update();
-        // bullet2.checkBounds();
+    public void addBullet(Bullet bullet){
+	// int flag=1;
+	bArrayList.add(bullet);
     }
 
-}
-private final Player dummy = new Player(0,0,"null",100,0,0);
+//checks bullet bounds and deletes it 
+    public void nextBullet()
+    {
+	for(Bullet bullet2:bArrayList)
+	{
+	    bullet2.update();
+	    // bullet2.checkBounds();
+	}
+    }
+    private final Player dummy = new Player(0,0,"null",100,0,0);
 //bullet collision with player
-public Player bulletReg(){
-    
-    float xp;
-    float yp;
-    float xb;
-    float yb;
-    for(Map.Entry<String,Player> mEle : players.entrySet()){
+    public Player bulletReg(){
+	
+	float xp;
+	float yp;
+	float xb;
+	float yb;
+	for(Map.Entry<String,Player> mEle : players.entrySet()){
         
-        for (Iterator<Bullet> iterator = bArrayList.iterator(); iterator.hasNext(); ) {
-            Bullet bullet = iterator.next();
-            // for(Bullet bullet : bArrayList){
+	    for (Iterator<Bullet> iterator = bArrayList.iterator(); iterator.hasNext(); ) {
+		Bullet bullet = iterator.next();
+		// for(Bullet bullet : bArrayList){
                 xp=mEle.getValue().getx();
                 yp=mEle.getValue().gety();       
                 xb=bullet.getx();
@@ -104,19 +103,18 @@ public Player bulletReg(){
                     return mEle.getValue();           
                 }
             }
+	}
+
+
+	return dummy;
+
+
     }
 
-
-    return dummy;
-
-
-}
-
     public void predictPos(){
-        for(Map.Entry<String,Player> mEle : players.entrySet()){
+        for(Map.Entry<String,Player> mEle : players.entrySet()) {
             mEle.getValue().update();
         }
-        
     }
 
 }
