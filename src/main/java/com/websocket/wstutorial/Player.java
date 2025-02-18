@@ -1,10 +1,7 @@
 package com.websocket.wstutorial;
 
+import java.awt.Point;
 import java.util.Random;
-
-// import java.io.Serializable;
-
-
 
 public class Player {
 
@@ -15,21 +12,20 @@ public class Player {
     private float velx,vely;
     private String name;
     private float hp;
-    Player(){
+    
+    Player() {}
 
-    }
-
-    Player(float x,float y,String name,float hp,float velx,float vely ){
-        this.x=x;
-        this.y=y;
-        this.name=name;
-        this.hp =hp;
-        this.velx =velx;
-        this.vely=vely;
+    Player(float x, float y, String name, float hp, float velx, float vely){
+        this.x = x;
+        this.y = y;
+        this.name = name;
+        this.hp = hp;
+        this.velx = velx;
+        this.vely = vely;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
-        this.g = random.nextInt() / 2f;
+        this.g = random.nextInt()/2f;
         this.b = random.nextInt()/2f;
     }
 
@@ -39,19 +35,15 @@ public class Player {
         y += vely;
     }
 
-
     public float bulletHit(){
         hp-=25;
         return hp;
     }
-    
-    
 
     public float getx(){
         return x;
     }
-    
-    
+
     public float getvelx(){
         return velx;
     }
@@ -65,7 +57,6 @@ public class Player {
     }
 
     public void setHp(float Hp){
-
         hp=Hp;
     }
 
@@ -114,10 +105,14 @@ public class Player {
 
     }
 
+    public boolean collide(Point p)
+    {
+	return (13.5 >= Math.hypot(x - p.x, y - p.y));
+    }
     
     public void setvely(float vely){
         
-        this.vely=vely;
+	this.vely=vely;
 
     }
     

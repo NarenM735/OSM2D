@@ -1,5 +1,7 @@
 package com.websocket.wstutorial;
 
+import java.awt.Point;
+
 public class Bullet {
     private float x;
     private float y;
@@ -11,16 +13,16 @@ public class Bullet {
     Bullet(){}
 
     Bullet(float x,float y,float velx,float vely){
-        this.x=x;
-        this.y=y;
-        this.velx=velx;
-        this.vely=vely;
+        this.x = x;
+        this.y = y;
+        this.velx = velx;
+        this.vely = vely;
     }
 
     
     public void update(){
-        x+=velx;
-        y+=vely;
+        x += velx;
+        y += vely;
     }
     public float getx(){
         return x;
@@ -30,9 +32,14 @@ public class Bullet {
     public float gety(){
         return y;
     }
+
+    public Point getPos()
+    {
+	return new Point((int)x,(int)y);
+    }
     
     public float getvelx(){
-        return velx;
+	return velx;
     }
     
     public float getvely(){
@@ -40,18 +47,18 @@ public class Bullet {
     }
 
     public void setx(float x){
-        this.x=x;
+        this.x = x;
     }
     
     public void sety(float y){
-        this.y=y;
+        this.y = y;
     }
     
     public void setvelx(float velx){
-        this.velx=velx;
+        this.velx = velx;
     }
     
     public void setvely(float vely){
-        this.vely=vely;
+        this.vely = vely;
     }
 }
