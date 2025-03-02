@@ -105,6 +105,11 @@ public class Player {
 
     }
 
+    public Point getPos()
+    {
+	return new Point((int)x, (int)y);
+    }
+    
     public boolean collide(Point p)
     {
 	return (13.5 >= Math.hypot(x - p.x, y - p.y));

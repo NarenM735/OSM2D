@@ -19,6 +19,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class MessageController {
@@ -91,24 +92,36 @@ public class MessageController {
 
 
     
-    @Scheduled(fixedRate = 50)
-    public void sendPlayerList() throws InterruptedException{
-        
-	simpMessagingTemplate. convertAndSend("/topic/gameState", gameService.getPlayerList());
+    @Scheduled(fixedRate = 16)
+    public void sendPlayerList() throws InterruptedException {
+	simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
     }
 
     @Scheduled(fixedRate = 16)
-    public void sendLocation() throws InterruptedException{
+    public void sendPlayerLocations() throws InterruptedException{
 
-        Player p = gameService.bulletReg();
-        if(p.getname()!="null"){
-            ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
-            simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
-            simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+        List<Player> damagedPlayers = gameService.checkPlayerBulletCollisions();
+        for (Player p : damagedPlayers)
+	{
+	    ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
+	    simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
         }
+
+	if (!damagedPlayers.isEmpty())
+	    simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
+
 	
-        gameService.nextBullet();
+        gameService.updateBullets();
         gameService.predictPos();
+
+	List<Player> playersToBeStopped = gameService.checkPlayerOutOfBounds();
+	gameService.checkPlayerWallCollisions();
+	
+	if (!playersToBeStopped.isEmpty())
+	{
+	    simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
+	}
+	
     }
 
     
@@ -116,8 +129,6 @@ public class MessageController {
     @Scheduled(fixedRate = 1000)
     public void sendBulletList() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
-        
-        
     }
 
 

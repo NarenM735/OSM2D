@@ -8,8 +8,6 @@ public class Bullet {
     private float velx;
     private float vely;
     
-
-    
     Bullet(){}
 
     Bullet(float x,float y,float velx,float vely){

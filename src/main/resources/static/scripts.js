@@ -62,14 +62,14 @@ function onConnected() {
     });
     // Tell your username to the server
     stompClient.send('/ws/playerJoin',
-		     {},
-		     JSON.stringify({messageContent: "hello"})
-		    )
+                     {},
+                     JSON.stringify({messageContent: "hello"})
+                    )
 
     stompClient.send('/ws/gameState',
-        {},
-        JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
-       )
+                     {},
+                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
+                    )
 
     // connectingElement.classList.add('hidden');
 }
@@ -108,13 +108,13 @@ function charIsDown(charachter)
 function handleMovement()
 {
     if (charIsDown("a"))
-	x_pos -= speed;
+        x_pos -= speed;
     if (charIsDown("d"))
-	x_pos += speed;
+        x_pos += speed;
     if (charIsDown("w"))
-	y_pos -= speed;
+        y_pos -= speed;
     if (charIsDown("s"))
-	y_pos += speed;
+        y_pos += speed;
 
 
 
@@ -150,74 +150,81 @@ function draw()
     x_speed = 0;
     y_speed = 0;
 
+    old_x_pos = x_pos;
+    old_y_pos = y_pos;
+
     let elapsed = millis() - last_time;
     let multiplier = elapsed / frame_time;
     if (charIsDown("a")) {
-	    x_pos -= speed * multiplier; 
-        x_speed = -speed;
+        x_pos -= speed * multiplier; 
+        x_speed += -speed;
     }if (charIsDown("d")) {
-	    x_pos += speed * multiplier;
-        x_speed = speed;
+        x_pos += speed * multiplier;
+        x_speed += speed;
     }
     if (charIsDown("w")) {
-	    y_pos -= speed * multiplier;
-        y_speed = -speed;
+        y_pos -= speed * multiplier;
+        y_speed += -speed;
     }
     if (charIsDown("s")) {
-	    y_pos += speed * multiplier;
-        y_speed = speed;
+        y_pos += speed * multiplier;
+        y_speed += speed;
     }
     
     fill(100,100,255);
     
     if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed)){
         
-	stompClient.send('/ws/gameState',
-			 {},
-			 JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
-			)
-            
+        stompClient.send('/ws/gameState',
+                         {},
+                         JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
+                        )
+        
     }
     last_xspeed=x_speed;
     last_yspeed=y_speed;
-     self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp};
+    self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp};
 
 
     if(bulletEntity!=null){
         bullets.push(bulletEntity);
         bulletEntity=null;
     }
+    
     if (bullets.length!=0)
     {
         for(const bullet of bullets)
         {   
             circle(bullet.x,bullet.y,7);
-	        updateBullet(bullet);
+            updateBullet(bullet);
             
         }
     }
-    console.log("drawing");
+
+    
     if(players.length!=0){
-            for(const player of players)
-            {
+        for(const player of players)
+        {
             if(!player)
                 continue;
             
             
-            if (player.name == clientID) // skip yourself
-            //   {  playerHp = player.hp;
-                continue;
-                // }
-
-            let elapsed = millis() - last_time;
-            player.x += player.velx * (elapsed / frame_time);
-            player.y += player.vely * (elapsed / frame_time);
-    
-            drawPlayer(player);
+            if (player.name == clientID)
+            {
+                self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp};
+		x_pos = player.x;
+		y_pos = player.y;
             }
+            
+            let elapsed = millis() - last_time;
+            // player.x += player.velx * (elapsed / frame_time);
+            // player.y += player.vely * (elapsed / frame_time);
+            
+            drawPlayer(player);
         }
+    }
     
-    drawPlayer(self);
+    //drawPlayer(self);
     
     // renderMessage();
 
@@ -227,12 +234,12 @@ function draw()
     text(show_msg, 5, 25);
 
     if (frameCount%60==0 && message_time > 0)  
-        {
+    {
         message_time --;
-        }
-        if(message_time==0 ){
+    }
+    if(message_time==0 ){
         show_msg=self.hp; 
-        }
+    }
 
 
     last_time = millis();
@@ -276,8 +283,8 @@ function mouseClicked()
     if (mouseButton == LEFT)
     {
         spawnBullet();
-	
-	// bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
-    // stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
+        
+        // bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
+        // stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
     }
 }
