@@ -180,13 +180,13 @@ function draw()
     
     fill(100,100,255);
     
-    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed)){
-        
-        stompClient.send('/ws/gameState',
-                         {},
-                         JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
-                        )
-        
+    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
+        if (Math.abs(old_x_pos-x_pos) < 5 || Math.abs(old_y_pos-y_pos) < 5){
+            stompClient.send('/ws/gameState',
+                {},
+                JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
+               )
+        }
     }
     last_xspeed=x_speed;
     last_yspeed=y_speed;
@@ -232,10 +232,6 @@ function draw()
         }
     }
     
-    //drawPlayer(self);
-    
-    // renderMessage();
-
     
     fill(100,100,200); 
     textSize(20);
