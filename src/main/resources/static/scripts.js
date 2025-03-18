@@ -4,6 +4,7 @@ const bullet_speed = 10;
 const frame_time = 16.666666666666666666666666666667;
 
 var stompClient = null;
+var flag1 = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
@@ -12,7 +13,6 @@ document.addEventListener('DOMContentLoaded', function () {
 var players=[];
 var bullets=[];
 let clientID="";
-
 
 var x_pos = 100;
 var y_pos = 100;
@@ -174,11 +174,13 @@ function draw()
     fill(100,100,255);
     
     if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
-        if (Math.abs(old_x_pos-x_pos) < 5 || Math.abs(old_y_pos-y_pos) < 5){
-            stompClient.send('/ws/gameState',
-                {},
-                JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
-               )
+        if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
+            if (playerHp>0){
+                stompClient.send('/ws/gameState',
+                    {},
+                    JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
+                   )
+            }
         }
     }
     last_xspeed=x_speed;
@@ -211,16 +213,19 @@ function draw()
             
             if (player.name == clientID)
             {
+                flag1 = 1;
                 self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp};
 		x_pos = player.x;
 		y_pos = player.y;
+        playerHp = player.hp;
             }
             
             let elapsed = millis() - last_time;
             // player.x += player.velx * (elapsed / frame_time);
             // player.y += player.vely * (elapsed / frame_time);
-            
-            drawPlayer(player);
+            if (player.hp>0){
+                drawPlayer(player);
+            }
         }
     }
     
@@ -233,8 +238,14 @@ function draw()
     {
         message_time --;
     }
-    if(message_time==0 ){
+    if(message_time==0 && flag1){
         show_msg=self.hp; 
+        flag1=0;
+    }
+    else if (message_time==0 && !flag1){
+        playerHp = 0;
+        show_msg=0;
+        flag1=0;
     }
 
 
@@ -254,7 +265,10 @@ function spawnBullet()
 
     var vel_x = dir_x / mag * bullet_speed;
     var vel_y = dir_y / mag * bullet_speed;
-    stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
+    if (playerHp>0){
+        stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
+    }
+    
 
     // bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
 }
@@ -284,3 +298,35 @@ function mouseClicked()
         // stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
     }
 }
+
+
+function drawwalls()
+{
+    var x = 200;
+    var y = 200;
+    var width = 100;
+    var height = 100;
+
+    var canvas = document.createElement('canvas'); //Create a canvas element
+    //Set canvas width/height
+    canvas.style.width='100%';
+    canvas.style.height='100%';
+    //Set canvas drawing area width/height
+    canvas.width = window.innerWidth;
+    canvas.height = window.innerHeight;
+    //Position canvas
+    canvas.style.position='absolute';
+    canvas.style.left=0;
+    canvas.style.top=0;
+    canvas.style.zIndex=100000;
+    canvas.style.pointerEvents='none'; //Make sure you can click 'through' the canvas
+    document.body.appendChild(canvas); //Append canvas to body element
+    var context = canvas.getContext('2d');
+    //Draw rectangle
+    context.rect(x, y, width, height);
+    context.fillStyle = 'yellow';
+    context.fill();
+
+}
+
+drawwalls();

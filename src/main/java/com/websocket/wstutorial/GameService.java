@@ -16,12 +16,15 @@ public class GameService {
     private final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
+	private List<String> playerToBeRemoved;
 
     public GameService()
     {
 	players = new HashMap<>();
 	bullets = new ArrayList<>();
 	walls = new ArrayList<>();
+	playerToBeRemoved = new ArrayList<>();
+
 
 	walls.add(new Wall(200, 200, 300, 300));
     }
@@ -116,6 +119,8 @@ public class GameService {
     // check bullet collision with player
     public List<Player> checkPlayerBulletCollisions(){
 
+
+
 	List<Player> result = new ArrayList<>();
 	
 	for(Map.Entry<String,Player> mEle : players.entrySet()){
@@ -128,6 +133,12 @@ public class GameService {
 
 		if(player.collide(bullet.getPos())){
 		    player.bulletHit();
+			float current_playerHp = player.getHp();
+			if (current_playerHp == 0.0f){
+				String play_name = player.getname();
+				// /playerToBeRemoved.add(play_name);
+				players.remove(play_name);
+			}
 		    iterator.remove();
 		    result.add(player);          
 		}

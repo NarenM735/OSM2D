@@ -94,8 +94,14 @@ public class MessageController {
     
     @Scheduled(fixedRate = 16)
     public void sendPlayerList() throws InterruptedException {
-	simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
-    }
+    simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());       
+        for (Player p: gameService.getPlayerList()){
+            if (p.getHp() == 0){
+                gameService.removePlayer(p.getname());
+            }
+        }
+
+}
 
     @Scheduled(fixedRate = 16)
     public void sendPlayerLocations() throws InterruptedException{

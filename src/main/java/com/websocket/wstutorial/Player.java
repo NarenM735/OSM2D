@@ -13,7 +13,9 @@ public class Player {
     private String name;
     private float hp;
     
-    Player() {}
+    Player() {
+        this.hp = 100;
+    }
 
     Player(float x, float y, String name, float hp, float velx, float vely){
         this.x = x;
@@ -36,7 +38,7 @@ public class Player {
     }
 
     public float bulletHit(){
-        hp-=25;
+        hp-=10;
         return hp;
     }
 
@@ -57,6 +59,10 @@ public class Player {
     }
 
     public void setHp(float Hp){
+        if (hp<=0){
+            hp = 0;
+            return;
+        }
         hp=Hp;
     }
 
@@ -138,5 +144,5 @@ public class Player {
         this.y=y;
 
     }
-
+    
 }
