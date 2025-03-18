@@ -2,7 +2,7 @@ var last_xspeed=0;
 var last_yspeed=0;
 const bullet_speed = 10;
 const frame_time = 16.666666666666666666666666666667;
-
+var playerHp =100;
 var stompClient = null;
 var flag1 = 0;
 
@@ -10,6 +10,7 @@ document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
     connect();
 });
+
 var players=[];
 var bullets=[];
 let clientID="";
@@ -21,9 +22,8 @@ var y_speed = 0;
 const speed = 3;
 
 var bulletEntity=null;
-var playerHp=100;
-var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,hp:playerHp};
 
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -41,10 +41,6 @@ function connect() {
         stompClient.subscribe('/topic/gameBulletSingle', function (message) {
             bulletEntity=JSON.parse(message.body);
         });
-        stompClient.subscribe('/user/queue/bullet', function (message) {
-            playerHp=JSON.parse(message.body).content;
-            showMessage(JSON.parse(message.body).content);
-        });
     });
 
 }
@@ -60,11 +56,7 @@ function onConnected() {
     stompClient.subscribe('/topic/playerJoin', function (message) {
         showMessage(JSON.parse(message.body).content);
     });
-    // Tell your username to the server
-    stompClient.send('/ws/playerJoin',
-                     {},
-                     JSON.stringify({messageContent: "hello"})
-                    )
+
 
     stompClient.send('/ws/gameState',
                      {},
@@ -74,12 +66,12 @@ function onConnected() {
     // connectingElement.classList.add('hidden');
 }
 
-var message_time = 5    ;
+let message_time = 5    ;
 var show_msg = "CONNECTING...";
 
 function showMessage(msg)
 {
-    
+    message_time = 3;
     show_msg = msg;
     
 }
@@ -147,6 +139,7 @@ function draw()
 {
     background(220);
 
+    handleMovement();    
     x_speed = 0;
     y_speed = 0;
 
@@ -183,6 +176,8 @@ function draw()
             }
         }
     }
+
+     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
     last_xspeed=x_speed;
     last_yspeed=y_speed;
     self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp};
@@ -229,8 +224,7 @@ function draw()
         }
     }
     
-    
-    fill(100,100,200); 
+    fill(100,100,200);
     textSize(20);
     text(show_msg, 5, 25);
 
@@ -250,6 +244,7 @@ function draw()
 
 
     last_time = millis();
+
 
 
 }
@@ -299,34 +294,3 @@ function mouseClicked()
     }
 }
 
-
-function drawwalls()
-{
-    var x = 200;
-    var y = 200;
-    var width = 100;
-    var height = 100;
-
-    var canvas = document.createElement('canvas'); //Create a canvas element
-    //Set canvas width/height
-    canvas.style.width='100%';
-    canvas.style.height='100%';
-    //Set canvas drawing area width/height
-    canvas.width = window.innerWidth;
-    canvas.height = window.innerHeight;
-    //Position canvas
-    canvas.style.position='absolute';
-    canvas.style.left=0;
-    canvas.style.top=0;
-    canvas.style.zIndex=100000;
-    canvas.style.pointerEvents='none'; //Make sure you can click 'through' the canvas
-    document.body.appendChild(canvas); //Append canvas to body element
-    var context = canvas.getContext('2d');
-    //Draw rectangle
-    context.rect(x, y, width, height);
-    context.fillStyle = 'yellow';
-    context.fill();
-
-}
-
-drawwalls();
