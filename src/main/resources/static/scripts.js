@@ -87,10 +87,14 @@ function showMessage(msg)
 var red=null;
 var green=null;
 var blue=null;
-
+let backGroundImg;
 function setup() {
-    createCanvas(1280, 650);
-    background(220);
+    createCanvas(2619, 1440);
+    backGroundImg = loadImage('/backgrd.jpg');
+    image(backGroundImg,0,0);
+    
+    
+    // background(220);
     frameRate(60);
 
     
@@ -141,11 +145,14 @@ function updateBullet(bullet)
 
 }
 
+// function preload(){
+    
+// }
 
-
+var f=0;
 function draw()
 {
-    background(220);
+    background(backGroundImg);
 
     x_speed = 0;
     y_speed = 0;
@@ -214,6 +221,7 @@ function draw()
                 self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp};
 		x_pos = player.x;
 		y_pos = player.y;
+        f=1;
             }
             
             let elapsed = millis() - last_time;
@@ -237,8 +245,10 @@ function draw()
     {
         message_time --;
     }
-    if(message_time==0 ){
+    if(message_time==0 && f){
         show_msg=self.hp; 
+    }else if(message_time==0 && self.hp<0){
+        show_msg=0;
     }
 
 
