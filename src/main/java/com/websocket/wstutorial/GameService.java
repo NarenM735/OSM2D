@@ -1,5 +1,6 @@
 package com.websocket.wstutorial;
-
+//import org.slf4j.Logger;
+//import org.slf4j.LoggerFactory;
 import java.util.*;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -7,6 +8,7 @@ import java.awt.Rectangle;
 import org.apache.catalina.webresources.WarResourceSet;
 import org.springframework.stereotype.Service;
 
+//import com.sun.org.slf4j.internal.LoggerFactory;
 import com.websocket.wstutorial.dto.Message;
 
 @Service
@@ -16,17 +18,18 @@ public class GameService {
     private final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
-	private List<String> playerToBeRemoved;
+	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
     public GameService()
     {
 	players = new HashMap<>();
 	bullets = new ArrayList<>();
 	walls = new ArrayList<>();
-	playerToBeRemoved = new ArrayList<>();
-
-
-	walls.add(new Wall(200, 200, 300, 300));
+		int x1 = 200;
+		int y1 = 200;
+		int x2 = 300;
+		int y2 = 300;
+	walls.add(new Wall(x1, y1, x2, y2));
     }
 
     public ArrayList<Player> getPlayerList()
@@ -122,8 +125,7 @@ public class GameService {
 
 
 	List<Player> result = new ArrayList<>();
-	
-	for(Map.Entry<String,Player> mEle : players.entrySet()){
+	for(Map.Entry<String,Player> mEle : new HashSet<Map.Entry<String,Player>>(players.entrySet())){
 
 	    Player player = mEle.getValue();
 	    
@@ -135,8 +137,8 @@ public class GameService {
 		    player.bulletHit();
 			float current_playerHp = player.getHp();
 			if (current_playerHp == 0.0f){
+				System.out.println("Backend lagging");
 				String play_name = player.getname();
-				// /playerToBeRemoved.add(play_name);
 				players.remove(play_name);
 			}
 		    iterator.remove();
