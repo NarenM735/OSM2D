@@ -137,7 +137,6 @@ public class GameService {
 		    player.bulletHit();
 			float current_playerHp = player.getHp();
 			if (current_playerHp == 0.0f){
-				System.out.println("Backend lagging");
 				String play_name = player.getname();
 				players.remove(play_name);
 			}

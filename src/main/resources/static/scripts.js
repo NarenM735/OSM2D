@@ -142,7 +142,11 @@ function updateBullet(bullet)
 {
 
     let elapsed = millis() - last_time;
-
+    if (bullet.x>500 || bullet.y> 500|| ((bullet.x>200 && bullet.x<300) && (bullet.y>200 && bullet.y<300))){
+        var ind = bullets.indexOf(bullet);
+        bullets.splice(ind, 1);
+        return;
+    }
     bullet.x += bullet.velx * (elapsed / frame_time);
     bullet.y += bullet.vely * (elapsed / frame_time);
 }

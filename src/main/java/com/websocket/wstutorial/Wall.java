@@ -14,14 +14,14 @@ public class Wall
 
     public void collidePlayer(Player p)
     {
-	Point playerPos = p.getPos();
-	if (bounds.contains(playerPos))
+	Point bulletpos = p.getPos();
+	if (bounds.contains(bulletpos))
 	{
-	    double d1 = playerPos.x - bounds.getMinX();
-	    double d2 = bounds.getMaxX() - playerPos.x;
+	    double d1 = bulletpos.x - bounds.getMinX();
+	    double d2 = bounds.getMaxX() - bulletpos.x;
 
-	    double d3 = playerPos.y - bounds.getMinY();
-	    double d4 = bounds.getMaxY() - playerPos.y;
+	    double d3 = bulletpos.y - bounds.getMinY();
+	    double d4 = bounds.getMaxY() - bulletpos.y;
 
 	    double min_val = Math.min(d1, Math.min(d2, Math.min(d3, d4)));
 
@@ -47,4 +47,41 @@ public class Wall
 	    }
 	}
     }
+
+	public void collidebullet(Bullet b)
+    {
+	Point bulletpos = b.getPos();
+	if (bounds.contains(bulletpos))
+	{
+	    double d1 = bulletpos.x - bounds.getMinX();
+	    double d2 = bounds.getMaxX() - bulletpos.x;
+
+	    double d3 = bulletpos.y - bounds.getMinY();
+	    double d4 = bounds.getMaxY() - bulletpos.y;
+
+	    double min_val = Math.min(d1, Math.min(d2, Math.min(d3, d4)));
+
+	    if (min_val == d1)
+	    {
+		b.setx((int)bounds.getMinX());
+		//p.setvelx(0);
+	    }
+	    else if (min_val == d2)
+	    {
+		b.setx((int)bounds.getMaxX());
+		//p.setvelx(0);
+	    }
+	    else if (min_val == d3)
+	    {
+		b.sety((int)bounds.getMinY());
+		//p.setvely(0);
+	    }
+	    else
+	    {
+		b.sety((int)bounds.getMaxY());
+		//p.setvely(0);
+	    }
+	}
+    }
+
 }
