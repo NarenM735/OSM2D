@@ -88,9 +88,13 @@ var red=null;
 var green=null;
 var blue=null;
 let backGroundImg;
+
+var screen_width = 1280;
+var screen_height = 720;
+
 function setup() {
-    createCanvas(2619, 1440);
-    backGroundImg = loadImage('/backgrd.jpg');
+    createCanvas(screen_width, screen_height);
+    backGroundImg = loadImage('/Backgrd.jpg');
     image(backGroundImg,0,0);
     
     
@@ -130,7 +134,7 @@ var last_time = millis();
 function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
-    circle(player.x, player.y, 20);
+    circle(player.x - x_pos + width/2, player.y - y_pos + height/2, 20);
     console.log(player.x,player.y)
 }
 
@@ -147,7 +151,8 @@ function updateBullet(bullet)
 
 function draw()
 {
-    background(backGroundImg);
+    background(220);
+    image(backGroundImg, screen_width/2 - self.x, screen_height/2 - self.y);
 
     x_speed = 0;
     y_speed = 0;
@@ -172,8 +177,6 @@ function draw()
         y_pos += speed * multiplier;
         y_speed += speed;
     }
-    
-    fill(100,100,255);
     
     if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
@@ -201,7 +204,7 @@ function draw()
     {
         for(const bullet of bullets)
         {   
-            circle(bullet.x,bullet.y,7);
+            circle(bullet.x - x_pos + screen_width/2, bullet.y - y_pos + screen_height/2 ,7);
             updateBullet(bullet);
             
         }
@@ -262,8 +265,8 @@ function draw()
 function spawnBullet()
 
 {
-    var dir_x = mouseX - x_pos;
-    var dir_y = mouseY - y_pos;
+    var dir_x = mouseX - screen_width/2;
+    var dir_y = mouseY - screen_height/2;
 
     var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
 
