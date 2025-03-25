@@ -1,3 +1,7 @@
+var dir_x=0;
+var dir_y=0;
+
+var angleGun=0;
 var last_xspeed=0;
 var last_yspeed=0;
 const bullet_speed = 10;
@@ -23,7 +27,7 @@ const speed = 3;
 
 var bulletEntity=null;
 
-var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -68,7 +72,7 @@ function onConnected() {
 
     stompClient.send('/ws/gameState',
                      {},
-                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp})
+                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
                     )
 
     // connectingElement.classList.add('hidden');
@@ -91,10 +95,11 @@ let backGroundImg;
 
 var screen_width = 1280;
 var screen_height = 720;
-
+var gunImg;
 function setup() {
     createCanvas(screen_width, screen_height);
-    backGroundImg = loadImage('/Backgrd.jpg');
+    backGroundImg = loadImage('/mapTest1.jpg');
+    gunImg=loadImage('/gamegun.jpg');
     image(backGroundImg,0,0);
     
     
@@ -135,6 +140,16 @@ function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
     circle(player.x - x_pos + width/2, player.y - y_pos + height/2, 20);
+    push()
+    // angleMode(DEGREES);
+    translate(player.x - x_pos + width/2, player.y - y_pos + height/2);
+    
+    rotate(player.ang);
+
+    image(gunImg,0, 0,20,18);
+    
+    pop()
+    console.log(player.x - x_pos, player.y - y_pos)
     console.log(player.x,player.y)
 }
 
@@ -151,7 +166,8 @@ function updateBullet(bullet)
 
 function draw()
 {
-    background(220);
+    // background(255,51,54);
+    background(255,87,90);
     image(backGroundImg, screen_width/2 - self.x, screen_height/2 - self.y);
 
     x_speed = 0;
@@ -178,12 +194,13 @@ function draw()
         y_speed += speed;
     }
     
+    //why x:old_x_pos and y:old_y_pos
     if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
                     {},
-                    JSON.stringify({x: old_x_pos,y:old_y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp})
+                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
                    )
             }
         }
@@ -192,7 +209,7 @@ function draw()
      self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
     last_xspeed=x_speed;
     last_yspeed=y_speed;
-    self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp};
+    self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp,ang:angleGun};
 
 
     if(bulletEntity!=null){
@@ -221,7 +238,7 @@ function draw()
             if (player.name == clientID)
             {
                 flag1 = 1;
-                self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp};
+                self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp,ang:angleGun};
 		x_pos = player.x;
 		y_pos = player.y;
         playerHp = player.hp;
@@ -257,6 +274,15 @@ function draw()
 
     last_time = millis();
 
+    //angle of the gun
+    dir_x = mouseX - screen_width/2;
+    dir_y = mouseY - screen_height/2;
+
+   
+
+    angleGun = atan2(mouseY-(height/2),mouseX-(width/2));
+
+
 
 
 }
@@ -265,15 +291,13 @@ function draw()
 function spawnBullet()
 
 {
-    var dir_x = mouseX - screen_width/2;
-    var dir_y = mouseY - screen_height/2;
 
-    var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
+    var mag = sqrt(dir_x * dir_x + dir_y * dir_y);
 
     var vel_x = dir_x / mag * bullet_speed;
     var vel_y = dir_y / mag * bullet_speed;
     if (playerHp>0){
-        stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y}));
+        stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y,ang:angleGun}));
     }
     
 
