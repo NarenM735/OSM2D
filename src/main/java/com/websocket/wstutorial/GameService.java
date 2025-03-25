@@ -14,7 +14,7 @@ import com.websocket.wstutorial.dto.Message;
 @Service
 public class GameService {
 
-    private final Rectangle worldBounds = new Rectangle(0,0,500,500);
+    private final Rectangle worldBounds = new Rectangle(23,23,2976,2976);
     private final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
@@ -25,11 +25,23 @@ public class GameService {
 	players = new HashMap<>();
 	bullets = new ArrayList<>();
 	walls = new ArrayList<>();
-		int x1 = 200;
-		int y1 = 200;
-		int x2 = 300;
-		int y2 = 300;
-	walls.add(new Wall(x1, y1, x2, y2));
+		// int x1 = 200;
+		// int y1 = 200;
+		// int x2 = 300;
+		// int y2 = 300;
+	walls.add(new Wall(208, 7, 287, 140));
+	walls.add(new Wall(208, 151, 287, 250));
+	walls.add(new Wall(273, 458, 412, 586));
+	walls.add(new Wall(149, 938, 288, 1017));
+	walls.add(new Wall(330, 940, 724, 1018));
+	walls.add(new Wall(645, 998, 724, 1228));
+	walls.add(new Wall(886, 134, 1179,216));
+	walls.add(new Wall(887, 206, 968, 527));
+	walls.add(new Wall(1045, 323, 1124, 401));
+	walls.add(new Wall(922, 757, 1364, 835));
+	walls.add(new Wall(922, 815, 1001, 1360));
+	walls.add(new Wall(371, 1077, 450, 1155));
+	
     }
 
     public ArrayList<Player> getPlayerList()

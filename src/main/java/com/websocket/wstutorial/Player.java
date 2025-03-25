@@ -12,18 +12,21 @@ public class Player {
     private float velx,vely;
     private String name;
     private float hp;
+    private float ang;
+    
     
     Player() {
         this.hp = 100;
     }
 
-    Player(float x, float y, String name, float hp, float velx, float vely){
+    Player(float x, float y, String name, float hp, float velx, float vely,float ang){
         this.x = x;
         this.y = y;
         this.name = name;
         this.hp = hp;
         this.velx = velx;
         this.vely = vely;
+        this.ang=ang;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
@@ -110,6 +113,15 @@ public class Player {
         this.x=x;
 
     }
+
+    public void setang(float ang){
+        this.ang=ang;
+    }
+
+    public float getang(){
+        return ang;
+    }
+
 
     public Point getPos()
     {
