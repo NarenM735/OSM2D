@@ -96,6 +96,9 @@ public class MessageController {
     public void sendPlayerList() throws InterruptedException {
     simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());       
         for (Player p: gameService.getPlayerList()){
+            if (p == null)
+                continue;   
+            
             if (p.getHp() == 0){
                 gameService.removePlayer(p.getname());
             }
@@ -132,7 +135,7 @@ public class MessageController {
 
     
     
-    @Scheduled(fixedRate = 1000)
+    @Scheduled(fixedRate = 100)
     public void sendBulletList() throws InterruptedException{
         simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());
     }

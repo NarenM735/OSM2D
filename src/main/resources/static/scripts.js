@@ -99,7 +99,7 @@ var gunImg;
 function setup() {
     createCanvas(screen_width, screen_height);
     backGroundImg = loadImage('/mapTest1.jpg');
-    gunImg=loadImage('/gamegun.jpg');
+    gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
     
     
@@ -146,7 +146,7 @@ function drawPlayer(player)
     
     rotate(player.ang);
 
-    image(gunImg,0, 0,20,18);
+    image(gunImg,0, 0,25,20);
     
     pop()
     console.log(player.x - x_pos, player.y - y_pos)
@@ -199,7 +199,8 @@ function draw()
     }
     
     //why x:old_x_pos and y:old_y_pos
-    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
+    //&& (last_xspeed!=x_speed || last_yspeed!=y_speed 
+    if(flag==1 ){
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
             if (playerHp>0){
                 stompClient.send('/ws/gameState',

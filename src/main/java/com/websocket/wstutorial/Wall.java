@@ -12,6 +12,11 @@ public class Wall
 	bounds = new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 
+	public boolean collideBullet(Bullet b)
+	{
+		return bounds.contains(b.getPos());
+	}
+
     public void collidePlayer(Player p)
     {
 	Point bulletpos = p.getPos();

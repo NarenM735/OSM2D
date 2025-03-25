@@ -69,6 +69,7 @@ public class GameService {
 
     public void updateBullets()
     {
+		// Rectangle wall1 = new Rectangle(208, 7, 287, 140);
 	for (Iterator<Bullet> iter = bullets.iterator(); iter.hasNext();)
 	{
 	    Bullet bullet = iter.next();
@@ -78,6 +79,18 @@ public class GameService {
 	    {
 		iter.remove();
 	    }
+		// else if(!wall1.contains(bullet.getPos())){
+		// 	iter.remove();
+
+		// }
+
+		for (Wall w : walls)
+		{
+			if (w.collideBullet(bullet))
+			{
+				iter.remove();
+			}
+		}
 	}
     }
 
