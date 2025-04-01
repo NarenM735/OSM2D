@@ -1,6 +1,6 @@
 var dir_x=0;
 var dir_y=0;
-
+var playerGif;
 var angleGun=0;
 var last_xspeed=0;
 var last_yspeed=0;
@@ -101,7 +101,7 @@ function setup() {
     backGroundImg = loadImage('/mapTest1.jpg');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
-    
+    playerGif = createImg('/Char_gif.gif');
     
     // background(220);
     frameRate(60);
@@ -139,7 +139,22 @@ var last_time = millis();
 function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
-    circle(player.x - x_pos + width/2, player.y - y_pos + height/2, 20);
+    //circle(player.x - x_pos + width/2, player.y - y_pos + height/2, 20);
+    
+    // playerGif.position(
+    //     player.x - x_pos + width / 2 - 10, 
+    //     player.y - y_pos + height / 2 - 20
+    // );
+    //playerGif.size(20,20);
+    playerGif.style('pointer-events', 'none');
+    
+
+    push()
+    translate(player.x - x_pos + width/2, player.y - y_pos + height/2);
+    image(playerGif,-10, -10,20,20);
+    pop()
+
+
     push()
     // angleMode(DEGREES);
     translate(player.x - x_pos + width/2, player.y - y_pos + height/2);
@@ -149,6 +164,7 @@ function drawPlayer(player)
     image(gunImg,0, 0,25,20);
     
     pop()
+    
     console.log(player.x - x_pos, player.y - y_pos)
     console.log(player.x,player.y)
 }
