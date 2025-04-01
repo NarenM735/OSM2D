@@ -19,10 +19,25 @@ import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Random;
+import java.awt.Point;
 
 @Controller
 public class MessageController {
+
+    Point spawnPoint1=new Point(1500, 30);
+    Point spawnPoint2=new Point(2900, 100);
+    Point spawnPoint3=new Point(100, 100);
+    Point spawnPoint4=new Point(30, 1500);
+    Point spawnPoint5=new Point(2970, 1500);
+    Point spawnPoint6=new Point(100, 2900);
+    Point spawnPoint7=new Point(2900, 2900);
+    Point spawnPoint8=new Point(1500, 2970);
+    
+
+
     @Autowired
     private NotificationService notificationService;
     private SimpMessagingTemplate simpMessagingTemplate;
@@ -53,10 +68,26 @@ public class MessageController {
   }
     @MessageMapping("/playerJoin")
     @SendTo("/topic/playerJoin")
-    public ResponseMessage getName(final Message message,final Principal principal) throws InterruptedException {
-        Thread.sleep(25);
+    public Player getName(final Message message,final Principal principal) throws InterruptedException {
+        Thread.sleep(20);
         // notificationService.sendGlobalNotification();
-        return new ResponseMessage(HtmlUtils.htmlEscape(principal.getName()+" Joined"));
+
+        List<Point> defaultSpawn = Arrays.asList(spawnPoint1,spawnPoint2,spawnPoint3,spawnPoint4,spawnPoint5,spawnPoint6,spawnPoint7,spawnPoint8);
+        Random rand = new Random();
+        Point assignedSpawPoint=defaultSpawn.get(rand.nextInt(defaultSpawn.size()));
+        Player p = new Player();
+        p.setx((float)assignedSpawPoint.getX());
+        p.sety((float)assignedSpawPoint.getY());
+        p.setname(principal.getName());
+
+        gameService.addPlayer(p);
+
+
+
+
+
+        
+        return p;
         //Add a List view of all the Players joins but a simple text
 
     }
@@ -65,6 +96,8 @@ public class MessageController {
     // @SendTo("/topic/gameState")
     public void getLocation(final Player player1,final Principal principal) throws InterruptedException {
             // player1.setname(principal.getName());
+           
+            
            gameService.addPlayer(player1);
         //    Thread.sleep(20);
         

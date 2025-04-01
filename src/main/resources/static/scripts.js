@@ -19,15 +19,14 @@ var players=[];
 var bullets=[];
 let clientID="";
 
-var x_pos = 100;
-var y_pos = 100;
+// var x_pos = 100;
+// var y_pos = 100;
 var x_speed = 0;
 var y_speed = 0;
 const speed = 3;
 
 var bulletEntity=null;
 
-var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -57,12 +56,17 @@ function connect() {
 var flag=0;
 
 
-
+var x_pos;
+var y_pos;
 function onConnected() {
     flag=1;
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/playerJoin', function (message) {
-        showMessage(JSON.parse(message.body).content);
+        // showMessage(JSON.parse(message.body).content);
+        tempPlayer=JSON.parse(message.body);
+        x_pos=tempPlayer.x;
+        y_pos=tempPlayer.y;
+         showMessage(tempPlayer.name);
     });
     // Tell your username to the server
     stompClient.send('/ws/playerJoin',
@@ -70,13 +74,15 @@ function onConnected() {
                      JSON.stringify({messageContent: "hello"})
                     )
 
-    stompClient.send('/ws/gameState',
-                     {},
-                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
-                    )
+    // stompClient.send('/ws/gameState',
+    //                  {},
+    //                  JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
+    //                 )
 
     // connectingElement.classList.add('hidden');
 }
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
+
 
 var message_time = 5    ;
 var show_msg = "CONNECTING...";
