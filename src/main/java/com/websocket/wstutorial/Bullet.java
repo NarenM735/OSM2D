@@ -7,12 +7,14 @@ public class Bullet {
     private float y;
     private float velx;
     private float vely;
+    private String bulletID;
     
-    Bullet(){}
+    // Bullet(){}
 
-    Bullet(float x,float y,float velx,float vely){
+    Bullet(float x,float y,float velx,float vely,String bulletID){
         this.x = x;
         this.y = y;
+        this.bulletID=bulletID;
         this.velx = velx;
         this.vely = vely;
     }
@@ -58,5 +60,13 @@ public class Bullet {
     
     public void setvely(float vely){
         this.vely = vely;
+    }
+
+    public void setbulletID(String bulletID){
+        this.bulletID=bulletID;
+    }
+
+    public String getbulletID(){
+        return bulletID;
     }
 }

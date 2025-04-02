@@ -4,6 +4,7 @@ package com.websocket.wstutorial;
 import java.util.*;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.time.LocalDateTime;
 
 import org.apache.catalina.webresources.WarResourceSet;
 import org.springframework.stereotype.Service;
@@ -12,13 +13,15 @@ import org.springframework.stereotype.Service;
 import com.websocket.wstutorial.dto.Message;
 
 @Service
-public class GameService {
+public class GameService{
 
     private final Rectangle worldBounds = new Rectangle(23,23,2976,2976);
     private final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
+
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(10);
 
     public GameService()
     {
@@ -162,9 +165,11 @@ public class GameService {
 		    player.bulletHit();
 			float current_playerHp = player.getHp();
 			if (current_playerHp == 0.0f){
-				System.out.println("Backend lagging");
+				// System.out.println("Backend lagging");
 				String play_name = player.getname();
+				System.out.println(play_name+" was killed by "+bullet.getbulletID());
 				players.remove(play_name);
+
 			}
 		    iterator.remove();
 		    result.add(player);          
@@ -181,5 +186,13 @@ public class GameService {
 	    mEle.getValue().update();
 	}
     }
+
+	public void nukePlayers(){
+		for(Map.Entry<String,Player>mEle : players.entrySet()){
+			mEle.getValue().setHp(-1);
+		}
+
+		players.clear();
+	}
 
 }
