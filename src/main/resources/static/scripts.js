@@ -19,14 +19,15 @@ var players=[];
 var bullets=[];
 let clientID="";
 
-// var x_pos = 100;
-// var y_pos = 100;
+var x_pos = 100;
+var y_pos = 100;
 var x_speed = 0;
 var y_speed = 0;
 const speed = 3;
 
 var bulletEntity=null;
 
+var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 
 function connect() {
     var socket = new SockJS('/our-websocket');
@@ -56,17 +57,12 @@ function connect() {
 var flag=0;
 
 
-var x_pos;
-var y_pos;
+
 function onConnected() {
     flag=1;
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/playerJoin', function (message) {
-        // showMessage(JSON.parse(message.body).content);
-        tempPlayer=JSON.parse(message.body);
-        x_pos=tempPlayer.x;
-        y_pos=tempPlayer.y;
-         showMessage(tempPlayer.name);
+        showMessage(JSON.parse(message.body).content);
     });
     // Tell your username to the server
     stompClient.send('/ws/playerJoin',
@@ -74,15 +70,13 @@ function onConnected() {
                      JSON.stringify({messageContent: "hello"})
                     )
 
-    // stompClient.send('/ws/gameState',
-    //                  {},
-    //                  JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
-    //                 )
+    stompClient.send('/ws/gameState',
+                     {},
+                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
+                    )
 
     // connectingElement.classList.add('hidden');
 }
-var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
-
 
 var message_time = 5    ;
 var show_msg = "CONNECTING...";
@@ -107,7 +101,7 @@ function setup() {
     backGroundImg = loadImage('/mapTest1.jpg');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
-    playerGif = createImg('/Char_gif.gif');
+    playerGif = loadImage('/Char_gif.gif');
     
     // background(220);
     frameRate(60);
@@ -151,8 +145,8 @@ function drawPlayer(player)
     //     player.x - x_pos + width / 2 - 10, 
     //     player.y - y_pos + height / 2 - 20
     // );
-    //playerGif.size(20,20);
-    playerGif.style('pointer-events', 'none');
+    // playerGif.size(20,20);
+    //playerGif.style('pointer-events', 'none');
     
 
     push()
@@ -195,7 +189,7 @@ function draw()
     // background(255,51,54);
     background(255,87,90);
     image(backGroundImg, screen_width/2 - self.x, screen_height/2 - self.y);
-
+    drawHealthDialog(playerHp);
     x_speed = 0;
     y_speed = 0;
 
@@ -221,13 +215,18 @@ function draw()
     }
     
     //why x:old_x_pos and y:old_y_pos
-    //&& (last_xspeed!=x_speed || last_yspeed!=y_speed 
-    if(flag==1 ){
+    // 
+    // stompClient.send('/ws/gameState',
+    //     {},
+    //     JSON.stringify({name:clientID, ang:angleGun, hp:playerHp})
+    //    )
+    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed)){
+        
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
                     {},
-                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
+                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun})
                    )
             }
         }
@@ -282,14 +281,14 @@ function draw()
     
     fill(100,100,200);
     textSize(20);
-    text(show_msg, 5, 25);
+    //text(show_msg, 5, 25);
 
     if (frameCount%60==0 && message_time > 0)  
     {
         message_time --;
     }
     if(message_time==0 && flag1){
-        show_msg=self.hp; 
+        //show_msg=self.hp; 
         flag1=0;
     }
     else if (message_time==0 && !flag1){
@@ -314,6 +313,20 @@ function draw()
 
 }
 
+function drawHealthDialog(health) {
+    let x = 20, y = 20, w = 150, h = 50;
+
+    // Draw dialog background
+    fill(50, 50, 50, 200); // Semi-transparent dark box
+    stroke(255);
+    rect(x, y, w, h, 10); // Rounded corners
+
+    // Display health text
+    fill(255, 0, 0);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(`Health: ${health} HP`, x + w / 2, y + h / 2);
+}
 
 function spawnBullet()
 
