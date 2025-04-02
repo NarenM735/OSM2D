@@ -18,6 +18,7 @@ import org.springframework.web.socket.messaging.SessionDisconnectEvent;
 import org.springframework.web.util.HtmlUtils;
 
 import java.security.Principal;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -127,7 +128,10 @@ public class MessageController {
     
     @Scheduled(fixedRate = 16)
     public void sendPlayerList() throws InterruptedException {
-    simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());       
+    simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList()); 
+        if(LocalDateTime.now().isAfter(gameService.tenSecTest)){
+            gameService.nukePlayers();
+        }      
         for (Player p: gameService.getPlayerList()){
             if (p == null)
                 continue;   

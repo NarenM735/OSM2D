@@ -9,6 +9,7 @@ const frame_time = 16.666666666666666666666666666667;
 var playerHp =100;
 var stompClient = null;
 var flag1 = 0;
+var points = 0;
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
@@ -17,7 +18,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
 var players=[];
 var bullets=[];
-let clientID="";
+var clientID="";
 
 var x_pos = 100;
 var y_pos = 100;
@@ -49,6 +50,7 @@ function connect() {
             playerHp=JSON.parse(message.body).content;
             showMessage(JSON.parse(message.body).content);
         });
+        
     });
 
 }
@@ -215,13 +217,8 @@ function draw()
     }
     
     //why x:old_x_pos and y:old_y_pos
-    // 
-    // stompClient.send('/ws/gameState',
-    //     {},
-    //     JSON.stringify({name:clientID, ang:angleGun, hp:playerHp})
-    //    )
-    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed)){
-        
+    //&& (last_xspeed!=x_speed || last_yspeed!=y_speed 
+    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
@@ -337,7 +334,7 @@ function spawnBullet()
     var vel_x = dir_x / mag * bullet_speed;
     var vel_y = dir_y / mag * bullet_speed;
     if (playerHp>0){
-        stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y,ang:angleGun}));
+        stompClient.send('/ws/gameBullets',{},JSON.stringify({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y, bulletID:clientID}));
     }
     
 
