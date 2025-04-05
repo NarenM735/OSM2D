@@ -1,3 +1,4 @@
+var playScore=0;
 var dir_x=0;
 var dir_y=0;
 var playerGif;
@@ -20,8 +21,8 @@ var players=[];
 var bullets=[];
 var clientID="";
 
-var x_pos = 100;
-var y_pos = 100;
+var x_pos =-500;
+var y_pos =-500;
 var x_speed = 0;
 var y_speed = 0;
 const speed = 3;
@@ -47,7 +48,8 @@ function connect() {
             bulletEntity=JSON.parse(message.body);
         });
         stompClient.subscribe('/user/queue/bullet', function (message) {
-            playerHp=JSON.parse(message.body).content;
+            playerHp=JSON.parse(message.body)[0];
+            playScore=JSON.parse(message.body)[1];
             showMessage(JSON.parse(message.body).content);
         });
         
@@ -74,7 +76,7 @@ function onConnected() {
 
     stompClient.send('/ws/gameState',
                      {},
-                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun})
+                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore})
                     )
 
     // connectingElement.classList.add('hidden');
@@ -175,11 +177,12 @@ function updateBullet(bullet)
 {
 
     let elapsed = millis() - last_time;
-    if (bullet.x>500 || bullet.y> 500|| ((bullet.x>200 && bullet.x<300) && (bullet.y>200 && bullet.y<300))){
-        var ind = bullets.indexOf(bullet);
-        bullets.splice(ind, 1);
-        return;
-    }
+    //below code is disastrous
+    // if (bullet.x>500 || bullet.y> 500|| ((bullet.x>200 && bullet.x<300) && (bullet.y>200 && bullet.y<300))){
+    //     var ind = bullets.indexOf(bullet);
+    //     bullets.splice(ind, 1);
+    //     return;
+    // }
     bullet.x += bullet.velx * (elapsed / frame_time);
     bullet.y += bullet.vely * (elapsed / frame_time);
 }
@@ -191,7 +194,7 @@ function draw()
     // background(255,51,54);
     background(255,87,90);
     image(backGroundImg, screen_width/2 - self.x, screen_height/2 - self.y);
-    drawHealthDialog(playerHp);
+    
     x_speed = 0;
     y_speed = 0;
 
@@ -201,18 +204,22 @@ function draw()
     let elapsed = millis() - last_time;
     let multiplier = elapsed / frame_time;
     if (charIsDown("a")) {
-        x_pos -= speed * multiplier; 
+        x_pos -= speed * multiplier;
+        
         x_speed += -speed;
     }if (charIsDown("d")) {
         x_pos += speed * multiplier;
+        
         x_speed += speed;
     }
     if (charIsDown("w")) {
         y_pos -= speed * multiplier;
+        
         y_speed += -speed;
     }
     if (charIsDown("s")) {
         y_pos += speed * multiplier;
+        
         y_speed += speed;
     }
     
@@ -223,7 +230,7 @@ function draw()
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
                     {},
-                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun})
+                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun,score:playScore})
                    )
             }
         }
@@ -261,10 +268,11 @@ function draw()
             if (player.name == clientID)
             {
                 flag1 = 1;
-                self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp,ang:angleGun};
+                self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp,ang:player.angleGun,score:player.playScore};
 		x_pos = player.x;
 		y_pos = player.y;
         playerHp = player.hp;
+        playScore=player.score;
             }
             
             let elapsed = millis() - last_time;
@@ -305,6 +313,10 @@ function draw()
 
     angleGun = atan2(mouseY-(height/2),mouseX-(width/2));
 
+    //Functions called at the end of draw to avoid visiblity issue
+    drawHealthDialog(playerHp);
+    drawScoreDialog(playScore);
+
 
 
 
@@ -325,6 +337,21 @@ function drawHealthDialog(health) {
     text(`Health: ${health} HP`, x + w / 2, y + h / 2);
 }
 
+function drawScoreDialog(playScore) {
+    let x = 1110, y = 20, w = 150, h = 50;
+
+    // Draw dialog background
+    fill(50, 50, 50, 200); // Semi-transparent dark box
+    stroke(255);
+    rect(x, y, w, h, 10); // Rounded corners
+
+    // Display health text
+    fill(255, 0, 0);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(`Score: ${playScore}`, x + w / 2, y + h / 2);
+    fill(0,0,255);
+}
 function spawnBullet()
 
 {

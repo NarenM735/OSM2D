@@ -13,13 +13,14 @@ public class Player {
     private String name;
     private float hp;
     private float ang;
+    private int score;
     
     
     Player() {
         this.hp = 100;
     }
 
-    Player(float x, float y, String name, float hp, float velx, float vely,float ang){
+    Player(float x, float y, String name, float hp, float velx, float vely,float ang,int score){
         this.x = x;
         this.y = y;
         this.name = name;
@@ -27,6 +28,7 @@ public class Player {
         this.velx = velx;
         this.vely = vely;
         this.ang=ang;
+        this.score=score;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
@@ -155,6 +157,18 @@ public class Player {
         
         this.y=y;
 
+    }
+
+    public void setscore(int score){
+        this.score=score;
+    }
+
+    public int getscore(){
+        return score;
+    }
+
+    public void incScore(){
+        score+=10;
     }
     
 }

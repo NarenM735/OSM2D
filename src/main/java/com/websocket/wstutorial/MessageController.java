@@ -147,11 +147,13 @@ public class MessageController {
     public void sendPlayerLocations() throws InterruptedException{
 
         List<Player> damagedPlayers = gameService.checkPlayerBulletCollisions();
-        for (Player p : damagedPlayers)
-	{
-	    ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
-	    simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
-        }
+        //below code is useless
+        // for (Player p : damagedPlayers)
+	    // {
+	    // ResponseMessage rm = new ResponseMessage(HtmlUtils.htmlEscape(p.getHp()+""));
+	    // simpMessagingTemplate.convertAndSendToUser(p.getname(), "/queue/bullet",rm);
+        // }
+
 
 	if (!damagedPlayers.isEmpty())
 	    simpMessagingTemplate.convertAndSend("/topic/gameBullets", gameService.getBulletList());

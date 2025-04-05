@@ -21,7 +21,7 @@ public class GameService{
     private List<Wall> walls;
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
-	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(10);
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(10000);
 
     public GameService()
     {
@@ -165,12 +165,9 @@ public class GameService{
 		    player.bulletHit();
 			float current_playerHp = player.getHp();
 			if (current_playerHp == 0.0f){
-<<<<<<< HEAD
-=======
-				// System.out.println("Backend lagging");
->>>>>>> e99306feda6b1f73aa21adfba361020bf2efec8e
 				String play_name = player.getname();
 				System.out.println(play_name+" was killed by "+bullet.getbulletID());
+				players.get(bullet.getbulletID()).incScore();
 				players.remove(play_name);
 
 			}
@@ -190,6 +187,8 @@ public class GameService{
 	}
     }
 
+
+	//removes all player from the game (GAME OVER condition)
 	public void nukePlayers(){
 		for(Map.Entry<String,Player>mEle : players.entrySet()){
 			mEle.getValue().setHp(-1);
@@ -197,5 +196,8 @@ public class GameService{
 
 		players.clear();
 	}
+
+
+	
 
 }
