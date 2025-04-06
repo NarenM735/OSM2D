@@ -11,6 +11,7 @@ var playerHp =100;
 var stompClient = null;
 var flag1 = 0;
 var points = 0;
+let timer;
 
 document.addEventListener('DOMContentLoaded', function () {
     console.log("Page Ready");
@@ -34,6 +35,7 @@ var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 function connect() {
     var socket = new SockJS('/our-websocket');
     stompClient = Stomp.over(socket);
+    
     stompClient.connect({}, function (frame) {
         clientID = frame.headers["user-name"];
         console.log('Connected: ' + frame);
@@ -52,7 +54,11 @@ function connect() {
             playScore=JSON.parse(message.body)[1];
             showMessage(JSON.parse(message.body).content);
         });
-        
+        stompClient.send("/ws/timerFunction", {}, {});
+        stompClient.subscribe('/topic/timerFunction', function(message) {
+            timer = JSON.parse(message.body);
+            console.log("Remaining time (in seconds):", timer);
+        });        
     });
 
 }
@@ -316,9 +322,11 @@ function draw()
     //Functions called at the end of draw to avoid visiblity issue
     drawHealthDialog(playerHp);
     drawScoreDialog(playScore);
+    drawtimerDialog(timer);
 
-
-
+    if (timer<=0){
+        showGameOver(playScore);
+    }
 
 }
 
@@ -338,7 +346,7 @@ function drawHealthDialog(health) {
 }
 
 function drawScoreDialog(playScore) {
-    let x = 1110, y = 20, w = 150, h = 50;
+    let x = 1100, y = 20, w = 150, h = 50;
 
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
@@ -352,6 +360,23 @@ function drawScoreDialog(playScore) {
     text(`Score: ${playScore}`, x + w / 2, y + h / 2);
     fill(0,0,255);
 }
+
+function drawtimerDialog(time) {
+    let x = 20, y = 600, w = 150, h = 50;
+
+    // Draw dialog background
+    fill(50, 50, 50, 200); // Semi-transparent dark box
+    stroke(255);
+    rect(x, y, w, h, 10); // Rounded corners
+
+    // Display health text
+    fill(255, 0, 0);
+    textSize(16);
+    textAlign(CENTER, CENTER);
+    text(`Time Left: ${time} sec`, x + w / 2, y + h / 2);
+    fill(0,0,255);
+}
+
 function spawnBullet()
 
 {
@@ -394,3 +419,46 @@ function mouseClicked()
     }
 }
 
+function showGameOver(finalScore) {
+    
+    const overlay = document.createElement("div");
+    Object.assign(overlay.style, {
+      position: "fixed",
+      top: "0",
+      left: "0",
+      width: "100vw",
+      height: "100vh",
+      backgroundColor: "rgba(235, 115, 115, 0.3)",
+      backdropFilter: "blur(3px)",          // Subtle blur effect
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: "center",
+      alignItems: "center",
+      zIndex: 9999,
+      fontFamily: "sans-serif",
+      color: "#fff",
+      textAlign: "center"
+    });
+  
+    // Game Over text
+    const title = document.createElement("h1");
+    title.textContent = "Game Over";
+    title.style.fontSize = "4rem";
+    title.style.marginBottom = "20px";
+    title.style.color = "#ffffff";
+  
+    // Score display
+    const score = document.createElement("p");
+    score.textContent = `Your Score: ${finalScore}`;
+    score.style.fontSize = "1.5rem";
+    score.style.marginBottom = "30px";
+    
+  
+
+    // Append elements to overlay
+    overlay.appendChild(title);
+    overlay.appendChild(score);
+
+    document.body.appendChild(overlay);
+  }
+  

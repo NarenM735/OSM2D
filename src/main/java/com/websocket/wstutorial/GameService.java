@@ -16,12 +16,13 @@ import com.websocket.wstutorial.dto.Message;
 public class GameService{
 
     private final Rectangle worldBounds = new Rectangle(23,23,2976,2976);
-    private final Map<String, Player> players;
+    public final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
-	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(10000);
+	private LocalDateTime endTime;
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(50);
 
     public GameService()
     {
@@ -197,7 +198,17 @@ public class GameService{
 		players.clear();
 	}
 
-
+	public boolean shouldStartTimer() {
+		if (!players.isEmpty() && endTime == null) {
+			endTime = LocalDateTime.now().plusSeconds(50);
+			tenSecTest = endTime;
+		}
+		return endTime != null;
+	}
+	
+	public LocalDateTime getEndTime() {
+		return endTime != null ? endTime : LocalDateTime.now();
+	}
 	
 
 }
