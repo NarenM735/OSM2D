@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.awt.Point;
+import java.time.Duration;
 
 @Controller
 public class MessageController {
@@ -123,8 +124,19 @@ public class MessageController {
         
         // return gameService.getPlayerList();
     }
+    @Scheduled(fixedRate = 16)
+    @MessageMapping("/timerFunction")
+    @SendTo("/topic/timerFunction")
+    public long getRemainingTime() {
+        if (gameService.shouldStartTimer()) {
+            long remainingTime = Duration.between(LocalDateTime.now(), gameService.getEndTime()).getSeconds();
+            remainingTime = Math.max(remainingTime, 0);
 
-    
+            simpMessagingTemplate.convertAndSend("/topic/timerFunction", remainingTime);
+            return remainingTime;
+        }
+        return 50;
+    }
 
 
     

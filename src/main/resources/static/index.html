@@ -1,20 +1,33 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <link rel="stylesheet" type="text/css" href="styles.css">
-    <script src="/webjars/sockjs-client/sockjs.min.js"></script>
-    <script src="/webjars/stomp-websocket/stomp.min.js"></script>
-    <script src="p5.min.js"></script>
-    <script src="https://unpkg.com/p5.gif.js"></script>
-    <meta charset="utf-8">
-  </head>
-  <body>
-    <div id="namePrompt" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
-      <h2>Enter Your Name</h2>
-      <input type="text" id="playerNameInput" placeholder="Your name..." />
-      <button onclick="startGame()">Start Game</button>
-    </div>
-  
-    <script src="scripts.js"></script>
-  </body>  
+	<head>
+		<link rel="stylesheet" type="text/css" href="styles.css">
+		<script src="/webjars/sockjs-client/sockjs.min.js"></script>
+		<script src="/webjars/stomp-websocket/stomp.min.js"></script>
+		<script src="p5.min.js"></script>
+		<script src="https://unpkg.com/p5.gif.js"></script>
+		<meta charset="utf-8">
+	</head>
+	<body>
+		<div id="namePrompt" style="position: absolute; top: 40%; left: 50%; transform: translate(-50%, -50%); text-align: center;">
+			<h2>Enter Your Name</h2>
+			<input type="text" id="playerNameInput" placeholder="Your name..." />
+			<button onclick="startGame()">Start Game</button>
+		</div>
+
+		<script src="scripts.js"></script>
+		<audio id="bgAudio" loop>
+			<source src="OSM2D_Music.mp3" type="audio/mpeg">
+		</audio>
+
+
+		<script>
+			window.addEventListener("click", () => {
+				const audio = document.getElementById("bgAudio");
+				audio.play().catch(err => {
+					console.warn("Autoplay blocked:", err);
+				});
+			}, { once: true });
+		</script>
+	</body>  
 </html>
