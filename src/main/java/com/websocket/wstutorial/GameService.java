@@ -24,7 +24,7 @@ public class GameService{
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
 	private LocalDateTime endTime;
-	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(50);
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(300);
 
 	public GameService()
 	{
@@ -205,7 +205,7 @@ public class GameService{
 
 	public boolean shouldStartTimer() {
 		if (!players.isEmpty() && endTime == null) {
-			endTime = LocalDateTime.now().plusSeconds(50);
+			endTime = LocalDateTime.now().plusSeconds(300);
 			tenSecTest = endTime;
 		}
 		return endTime != null;

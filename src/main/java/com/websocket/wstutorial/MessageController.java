@@ -127,15 +127,15 @@ public class MessageController {
     @Scheduled(fixedRate = 16)
     @MessageMapping("/timerFunction")
     @SendTo("/topic/timerFunction")
-    public long getRemainingTime() {
+    public ResponseMessage getRemainingTime() {
         if (gameService.shouldStartTimer()) {
             long remainingTime = Duration.between(LocalDateTime.now(), gameService.getEndTime()).getSeconds();
             remainingTime = Math.max(remainingTime, 0);
 
             simpMessagingTemplate.convertAndSend("/topic/timerFunction", remainingTime);
-            return remainingTime;
+            return new ResponseMessage(HtmlUtils.htmlEscape(""+remainingTime));
         }
-        return 50;
+        return new ResponseMessage(HtmlUtils.htmlEscape("50"));
     }
 
 

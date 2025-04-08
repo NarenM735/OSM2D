@@ -2,7 +2,7 @@ var displayName;
 var playScore=0;
 var dir_x=0;
 var dir_y=0;
-var playerGif;
+var playerimg;
 var angleGun=0;
 var last_xspeed=0;
 var last_yspeed=0;
@@ -12,7 +12,7 @@ var playerHp =100;
 var stompClient = null;
 var flag1 = 0;
 var points = 0;
-let timer;
+let timer=300;
 
 // document.addEventListener('DOMContentLoaded', function () {
 //     console.log("Page Ready");
@@ -38,8 +38,8 @@ var bullets=[];
 var clientID="";
 var killFeedList=[];
 
-var x_pos =0;
-var y_pos =0;
+var x_pos =-500;
+var y_pos =-500;
 var x_speed = 0;
 var y_speed = 0;
 const speed = 3;
@@ -99,10 +99,10 @@ function onConnected() {
                      JSON.stringify({messageContent: "hello"})
                     )
 
-    stompClient.send('/ws/gameState',
-                     {},
-                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore,dpName:displayName})
-                    )
+    // stompClient.send('/ws/gameState',
+    //                  {},
+    //                  JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore,dpName:displayName})
+    //                 )
 
     // connectingElement.classList.add('hidden');
 }
@@ -130,7 +130,7 @@ function setup() {
     backGroundImg = loadImage('/mapTest1.jpg');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
-    playerGif = loadImage('/Char_gif.gif');
+    playerimg = loadImage('/char_static.png');
     
     // background(220);
     frameRate(60);
@@ -183,7 +183,7 @@ function drawPlayer(player)
 
     push()
     translate(player.x - x_pos + width/2, player.y - y_pos + height/2);
-    image(playerGif,-10, -10,20,20);
+    image(playerimg,-10, -10,20,20);
     pop()
 
 
@@ -374,6 +374,7 @@ function draw()
     //Functions called at the end of draw to avoid visiblity issue
     drawHealthDialog(playerHp);
     drawScoreDialog(playScore);
+    drawtimerDialog(timer);
 
 
     
