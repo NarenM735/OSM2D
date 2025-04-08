@@ -22,6 +22,7 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 import java.util.Random;
 import java.awt.Point;
 
@@ -43,6 +44,7 @@ public class MessageController {
     private NotificationService notificationService;
     private SimpMessagingTemplate simpMessagingTemplate;
     private final Logger LOG = LoggerFactory.getLogger(MessageController.class);
+    
 
 
     private GameService gameService;
@@ -70,7 +72,7 @@ public class MessageController {
     @MessageMapping("/playerJoin")
     @SendTo("/topic/playerJoin")
     public Player getName(final Message message,final Principal principal) throws InterruptedException {
-        Thread.sleep(20);
+        // Thread.sleep(20);
         // notificationService.sendGlobalNotification();
 
         List<Point> defaultSpawn = Arrays.asList(spawnPoint1,spawnPoint2,spawnPoint3,spawnPoint4,spawnPoint5,spawnPoint6,spawnPoint7,spawnPoint8);
@@ -132,6 +134,17 @@ public class MessageController {
         if(LocalDateTime.now().isAfter(gameService.tenSecTest)){
             gameService.nukePlayers();
         }      
+
+        if(!gameService.killFeed.isEmpty()){
+            Map.Entry<String,String> entry = gameService.killFeed.entrySet().iterator().next();
+            String key = entry.getKey();
+            String value = entry.getValue();
+            killFeedObj KFO=new killFeedObj(key,value,5);
+
+            simpMessagingTemplate.convertAndSend("/topic/gameKillFeedback", KFO ); 
+            gameService.killFeed.remove(key);
+
+        }
         for (Player p: gameService.getPlayerList()){
             if (p == null)
                 continue;   

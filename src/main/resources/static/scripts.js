@@ -1,3 +1,4 @@
+var displayName;
 var playScore=0;
 var dir_x=0;
 var dir_y=0;
@@ -12,17 +13,32 @@ var stompClient = null;
 var flag1 = 0;
 var points = 0;
 
-document.addEventListener('DOMContentLoaded', function () {
-    console.log("Page Ready");
+// document.addEventListener('DOMContentLoaded', function () {
+//     console.log("Page Ready");
+//     connect();
+// });
+function startGame() {
+    const nameInput = document.getElementById("playerNameInput").value.trim();
+    if (nameInput === "") {
+        alert("Please enter your name.");
+        return;
+    }
+    displayName = nameInput;
+
+    // Hide the name prompt
+    document.getElementById("namePrompt").style.display = "none";
+
+    // Now connect to the server
     connect();
-});
+}
 
 var players=[];
 var bullets=[];
 var clientID="";
+var killFeedList=[];
 
-var x_pos =-500;
-var y_pos =-500;
+var x_pos =0;
+var y_pos =0;
 var x_speed = 0;
 var y_speed = 0;
 const speed = 3;
@@ -47,10 +63,13 @@ function connect() {
         stompClient.subscribe('/topic/gameBulletSingle', function (message) {
             bulletEntity=JSON.parse(message.body);
         });
-        stompClient.subscribe('/user/queue/bullet', function (message) {
-            playerHp=JSON.parse(message.body)[0];
-            playScore=JSON.parse(message.body)[1];
-            showMessage(JSON.parse(message.body).content);
+        // useless(DONT DELETE MIGHT NEED AFTERWARDS)
+        stompClient.subscribe('/topic/gameKillFeedback', function (message) {
+            let temp =JSON.parse(message.body);
+            // let killerS=temp.killer;
+            // let killedS=temp.killed;
+            // let timer=5;
+            killFeedList.push(temp);
         });
         
     });
@@ -76,7 +95,7 @@ function onConnected() {
 
     stompClient.send('/ws/gameState',
                      {},
-                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore})
+                     JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore,dpName:displayName})
                     )
 
     // connectingElement.classList.add('hidden');
@@ -100,8 +119,8 @@ let backGroundImg;
 var screen_width = 1280;
 var screen_height = 720;
 var gunImg;
+
 function setup() {
-    createCanvas(screen_width, screen_height);
     backGroundImg = loadImage('/mapTest1.jpg');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
@@ -114,6 +133,9 @@ function setup() {
     red = Math.floor(Math.random() * 255);
     green = Math.floor(Math.random() * 255);
     blue = Math.floor(Math.random() * 255);
+    
+    createCanvas(screen_width, screen_height);
+    
 }
 
 function charIsDown(charachter)
@@ -187,6 +209,36 @@ function updateBullet(bullet)
     bullet.y += bullet.vely * (elapsed / frame_time);
 }
 
+function killFeed(){
+    // textAlign(TOP,LEFT);
+    let x = 1200, y = 40, w = 150, h = 50;
+
+    // // Draw dialog background
+    // fill(50, 50, 50, 200); // Semi-transparent dark box
+    // stroke(255);
+    // rect(x, y, w, h, 10); // Rounded corners
+
+    // Display health text
+    fill(255, 0, 0);
+    textSize(16);
+    textAlign(RIGHT);
+  
+  
+  
+  
+  for(let i=0;i<killFeedList.length;i++){
+  text(killFeedList[i%killFeedList.length].killer+" eliminated "+killFeedList[i%killFeedList.length].killed, screen_width-20,80 +(i%killFeedList.length)*20);
+  
+    console.log(killFeedList[i%killFeedList.length].killer+"eliminated"+killFeedList[i%killFeedList.length].killed);
+   if(killFeedList[0].time<=0){
+     killFeedList.splice(0,1);
+   }
+     
+    
+  }
+
+}
+
 
 
 function draw()
@@ -230,7 +282,7 @@ function draw()
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
                     {},
-                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun,score:playScore})
+                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun,score:playScore,dpName:displayName})
                    )
             }
         }
@@ -316,6 +368,25 @@ function draw()
     //Functions called at the end of draw to avoid visiblity issue
     drawHealthDialog(playerHp);
     drawScoreDialog(playScore);
+
+
+    
+  if (frameCount % 60 == 0 ) {
+    
+    for(let i=0;i<killFeedList.length;i++){
+      
+  if (killFeedList[i].time == 1) {
+    killFeedList[i].killer="";
+    killFeedList[i].killed="";
+    
+  }
+  
+      killFeedList[i].time--;  
+      console.log("time is: "+killFeedList[i].time);
+    } 
+    
+  }
+  killFeed();
 
 
 

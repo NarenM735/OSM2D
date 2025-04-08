@@ -14,13 +14,14 @@ public class Player {
     private float hp;
     private float ang;
     private int score;
+    private String dpName;//displayName
     
     
     Player() {
         this.hp = 100;
     }
 
-    Player(float x, float y, String name, float hp, float velx, float vely,float ang,int score){
+    Player(float x, float y, String name, float hp, float velx, float vely,float ang,int score,String dpName){
         this.x = x;
         this.y = y;
         this.name = name;
@@ -29,6 +30,7 @@ public class Player {
         this.vely = vely;
         this.ang=ang;
         this.score=score;
+        this.dpName=dpName;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
@@ -118,6 +120,14 @@ public class Player {
 
     public void setang(float ang){
         this.ang=ang;
+    }
+
+    public void setdpName(String dpName){
+        this.dpName=dpName;
+    }
+
+    public String getdpName(){
+        return dpName;
     }
 
     public float getang(){

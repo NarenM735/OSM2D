@@ -19,6 +19,8 @@ public class GameService{
     private final Map<String, Player> players;
     private final List<Bullet> bullets;
     private List<Wall> walls;
+	public final Map<String, String> killFeed;// killer -> killed
+
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
 	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(10000);
@@ -28,6 +30,7 @@ public class GameService{
 	players = new HashMap<>();
 	bullets = new ArrayList<>();
 	walls = new ArrayList<>();
+	killFeed = new HashMap<>();
 		// int x1 = 200;
 		// int y1 = 200;
 		// int x2 = 300;
@@ -168,7 +171,9 @@ public class GameService{
 				String play_name = player.getname();
 				System.out.println(play_name+" was killed by "+bullet.getbulletID());
 				players.get(bullet.getbulletID()).incScore();
+				killFeed.put(players.get(bullet.getbulletID()).getdpName(),player.getdpName());
 				players.remove(play_name);
+
 
 			}
 		    iterator.remove();
@@ -198,6 +203,5 @@ public class GameService{
 	}
 
 
-	
 
 }
