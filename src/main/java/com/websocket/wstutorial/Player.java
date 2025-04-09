@@ -15,6 +15,7 @@ public class Player {
     private float ang;
     private int score;
     private String dpName;//displayName
+    private boolean isAlive;
     
     
     Player() {
@@ -31,6 +32,7 @@ public class Player {
         this.ang=ang;
         this.score=score;
         this.dpName=dpName;
+        this.isAlive=true;
 
         random.setSeed(name.hashCode());
         this.r = random.nextInt();
@@ -95,6 +97,14 @@ public class Player {
     public float getb()
     {
         return b;
+    }
+
+    public boolean getisalive(){
+        return isAlive;
+    }
+
+    public void setisalive(boolean t){
+        isAlive=t;
     }
 
     public void setr(float r)

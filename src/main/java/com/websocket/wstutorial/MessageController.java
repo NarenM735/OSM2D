@@ -79,10 +79,35 @@ public class MessageController {
         List<Point> defaultSpawn = Arrays.asList(spawnPoint1,spawnPoint2,spawnPoint3,spawnPoint4,spawnPoint5,spawnPoint6,spawnPoint7,spawnPoint8);
         Random rand = new Random();
         Point assignedSpawPoint=defaultSpawn.get(rand.nextInt(defaultSpawn.size()));
+
         Player p = new Player();
+        System.out.println("hp1: "+p.getHp());
+        System.out.println("score1: "+p.getscore());
+        p.setname(principal.getName());
+        System.out.println("princ1: "+principal.getName());
+
+        System.out.println("contains key: " + gameService.players.containsKey(principal.getName()));
+        System.out.println(gameService.players.get(principal.getName()));
+
+        System.out.println("keys: ");
+        for (String k : gameService.players.keySet())
+        {
+            System.out.println(k);
+        }
+
+        if (gameService.players.containsKey(principal.getName()) && gameService.players.get(principal.getName()) != null)
+        {
+            System.out.println("inside if");
+            p = gameService.players.get(principal.getName());
+            System.out.println("hp2: "+p.getHp());
+            System.out.println("score2: "+p.getscore());
+        }
+        
+        p.setHp(100);
         p.setx((float)assignedSpawPoint.getX());
         p.sety((float)assignedSpawPoint.getY());
-        p.setname(principal.getName());
+        
+        
 
         gameService.addPlayer(p);
 

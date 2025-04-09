@@ -24,7 +24,7 @@ public class GameService{
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
 	private LocalDateTime endTime;
-	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(5*60);
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(100);
 
 	public GameService()
 	{
@@ -174,7 +174,8 @@ public class GameService{
 						players.get(bullet.getbulletID()).incScore();
 						killFeed.put(players.get(bullet.getbulletID()).getdpName(),player.getdpName());
 						// players.remove(play_name);
-						players.get(play_name).setHp(-1);
+						if(players.get(play_name)!=null)
+							players.get(play_name).setHp(-1);
 						
 
 
@@ -207,7 +208,7 @@ public class GameService{
 
 	public boolean shouldStartTimer() {
 		if (!players.isEmpty() && endTime == null) {
-			endTime = LocalDateTime.now().plusSeconds(300);
+			endTime = LocalDateTime.now().plusSeconds(100);
 			tenSecTest = endTime;
 		}
 		return endTime != null;
