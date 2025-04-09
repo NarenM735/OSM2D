@@ -123,8 +123,8 @@ var green=null;
 var blue=null;
 let backGroundImg;
 
-var screen_width = 1280;
-var screen_height = 720;
+// var width = 1920;
+// var height = 1080;
 var gunImg;
 
 function setup() {
@@ -141,7 +141,7 @@ function setup() {
     green = Math.floor(Math.random() * 255);
     blue = Math.floor(Math.random() * 255);
     
-    createCanvas(screen_width, screen_height);
+    createCanvas(windowWidth, windowHeight);
     
 }
 
@@ -234,7 +234,7 @@ function killFeed(){
   
   
   for(let i=0;i<killFeedList.length;i++){
-  text(killFeedList[i%killFeedList.length].killer+" eliminated "+killFeedList[i%killFeedList.length].killed, screen_width-20,80 +(i%killFeedList.length)*20);
+  text(killFeedList[i%killFeedList.length].killer+" eliminated "+killFeedList[i%killFeedList.length].killed, width-20,80 +(i%killFeedList.length)*20);
   
     console.log(killFeedList[i%killFeedList.length].killer+"eliminated"+killFeedList[i%killFeedList.length].killed);
    if(killFeedList[0].time<=0){
@@ -246,13 +246,15 @@ function killFeed(){
 
 }
 
-
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+  }
 
 function draw()
 {
     // background(255,51,54);
     background(255,87,90);
-    image(backGroundImg, screen_width/2 - self.x, screen_height/2 - self.y);
+    image(backGroundImg, width/2 - self.x, height/2 - self.y);
     
     x_speed = 0;
     y_speed = 0;
@@ -323,7 +325,7 @@ function draw()
     {
         for(const bullet of bullets)
         {   
-            circle(bullet.x - x_pos + screen_width/2, bullet.y - y_pos + screen_height/2 ,7);
+            circle(bullet.x - x_pos + width/2, bullet.y - y_pos + height/2 ,7);
             updateBullet(bullet);
             
         }
@@ -403,18 +405,19 @@ function draw()
     last_time = millis();
 
     //angle of the gun
-    dir_x = mouseX - screen_width/2;
-    dir_y = mouseY - screen_height/2;
+    dir_x = mouseX - width/2;
+    dir_y = mouseY - height/2;
 
    
 
     angleGun = atan2(mouseY-(height/2),mouseX-(width/2));
 
     //Functions called at the end of draw to avoid visiblity issue
+    if(flag){
     drawHealthDialog(playerHp);
     drawScoreDialog(playScore);
     drawtimerDialog(timer);
-
+    }
     if(playerHp<=0){
         
         x_pos=-500;
@@ -468,7 +471,7 @@ function drawHealthDialog(health) {
 }
 
 function drawScoreDialog(playScore) {
-    let x = 1100, y = 20, w = 150, h = 50;
+    let x = width-180, y = 20, w = 150, h = 50; //1280-180
 
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
@@ -484,7 +487,7 @@ function drawScoreDialog(playScore) {
 }
 
 function drawtimerDialog(time) {
-    let x = 20, y = 600, w = 150, h = 50;
+    let x = 20, y = height-80, w = 150, h = 50;
 
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
