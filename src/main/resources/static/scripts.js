@@ -14,10 +14,7 @@ var flag1 = 0;
 var points = 0;
 let timer=300;
 
-// document.addEventListener('DOMContentLoaded', function () {
-//     console.log("Page Ready");
-//     connect();
-// });
+
 function startGame() {
     const nameInput = document.getElementById("playerNameInput").value.trim();
     if (nameInput === "") {
@@ -51,11 +48,14 @@ var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 function connect() {
     var socket = new SockJS('/our-websocket');
     stompClient = Stomp.over(socket);
+    stompClient.debug = null;
     
     stompClient.connect({}, function (frame) {
         clientID = frame.headers["user-name"];
         console.log('Connected: ' + frame);
+	
         onConnected();
+	
         stompClient.subscribe('/topic/gameState', function (message) {
             players=JSON.parse(message.body);
         });
@@ -76,19 +76,14 @@ function connect() {
         
         stompClient.subscribe('/topic/timerFunction', function(message) {
             timer = JSON.parse(message.body);
-            console.log("Remaining time (in seconds):", timer);
+            // console.log("Remaining time (in seconds):", timer);
         });        
     });
 
 }
 
-
-var flag=0;
-
-
-
 function onConnected() {
-    flag=1;
+    loop();			// start p5 loop
     // Subscribe to the Public Topic
     stompClient.subscribe('/topic/playerJoin', function (message) {
         showMessage(JSON.parse(message.body).content);
@@ -97,18 +92,18 @@ function onConnected() {
     stompClient.send('/ws/playerJoin',
                      {},
                      JSON.stringify({messageContent: "hello"})
-                    )
+                    );
 
     // stompClient.send('/ws/gameState',
     //                  {},
     //                  JSON.stringify({x: x_pos,y:y_pos,name:clientID, r:red, g:green, b:blue,hp:playerHp,ang:angleGun,score:playScore,dpName:displayName})
     //                 )
-                    // stompClient.send("/ws/timerFunction", {}, {});
+    // stompClient.send("/ws/timerFunction", {}, {});
 
     // connectingElement.classList.add('hidden');
 }
 
-var message_time = 5    ;
+var message_time = 5;
 var show_msg = "CONNECTING...";
 
 function showMessage(msg)
@@ -128,6 +123,9 @@ var screen_height = 720;
 var gunImg;
 
 function setup() {
+
+    textFont('mc-font', 200);
+    
     backGroundImg = loadImage('/mapTest1.jpg');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
@@ -142,6 +140,8 @@ function setup() {
     blue = Math.floor(Math.random() * 255);
     
     createCanvas(screen_width, screen_height);
+
+    noLoop();			// stop p5 loop (it will be started once the stomp client connects)
     
 }
 
@@ -151,36 +151,11 @@ function charIsDown(charachter)
 }
 
 
-function handleMovement()
-{
-    if (charIsDown("a"))
-        x_pos -= speed;
-    if (charIsDown("d"))
-        x_pos += speed;
-    if (charIsDown("w"))
-        y_pos -= speed;
-    if (charIsDown("s"))
-        y_pos += speed;
-
-
-
-}
-
-
 var last_time = millis();
 
 function drawPlayer(player)
 {
     fill(player.r, player.g, player.b);
-    //circle(player.x - x_pos + width/2, player.y - y_pos + height/2, 20);
-    
-    // playerGif.position(
-    //     player.x - x_pos + width / 2 - 10, 
-    //     player.y - y_pos + height / 2 - 20
-    // );
-    // playerGif.size(20,20);
-    //playerGif.style('pointer-events', 'none');
-    
 
     push()
     translate(player.x - x_pos + width/2, player.y - y_pos + height/2);
@@ -194,12 +169,14 @@ function drawPlayer(player)
     
     rotate(player.ang);
 
+    if (player.ang > 3.14159/2 || player.ang < -3.14159/2)
+    {
+	scale(1,-1);		// flip it vertically
+    }
+
     image(gunImg,0, 0,25,20);
     
     pop()
-    
-    console.log(player.x - x_pos, player.y - y_pos)
-    console.log(player.x,player.y)
 }
 
 function updateBullet(bullet)
@@ -218,7 +195,7 @@ function updateBullet(bullet)
 
 function killFeed(){
     // textAlign(TOP,LEFT);
-    let x = 1200, y = 40, w = 150, h = 50;
+    // let x = 1200, y = 40, w = 150, h = 50;
 
     // // Draw dialog background
     // fill(50, 50, 50, 200); // Semi-transparent dark box
@@ -229,20 +206,20 @@ function killFeed(){
     fill(255, 0, 0);
     textSize(16);
     textAlign(RIGHT);
-  
-  
-  
-  
-  for(let i=0;i<killFeedList.length;i++){
-  text(killFeedList[i%killFeedList.length].killer+" eliminated "+killFeedList[i%killFeedList.length].killed, screen_width-20,80 +(i%killFeedList.length)*20);
-  
-    console.log(killFeedList[i%killFeedList.length].killer+"eliminated"+killFeedList[i%killFeedList.length].killed);
-   if(killFeedList[0].time<=0){
-     killFeedList.splice(0,1);
-   }
-     
     
-  }
+    
+    
+    
+    for(let i=0;i<killFeedList.length;i++){
+	text(killFeedList[i%killFeedList.length].killer+" eliminated "+killFeedList[i%killFeedList.length].killed, screen_width-20,80 +(i%killFeedList.length)*20);
+	
+	// console.log(killFeedList[i%killFeedList.length].killer+"eliminated"+killFeedList[i%killFeedList.length].killed);
+	if(killFeedList[0].time<=0){
+	    killFeedList.splice(0,1);
+	}
+	
+	
+    }
 
 }
 
@@ -282,37 +259,29 @@ function draw()
         y_speed += speed;
     }
 
-    if(playerHp<=0){
-        
-        x_pos=-500;
-        y_pos=-500;
-        playerHp=100;
-        stompClient.send('/ws/playerJoin',
-            {},
-            JSON.stringify({messageContent: "spawn"}) //assign new location
-           )
-           console.log("player ded,respawning");
-    }
+    //angle of the gun
+    dir_x = mouseX - screen_width/2;
+    dir_y = mouseY - screen_height/2;
+
     
-    //why x:old_x_pos and y:old_y_pos
-    //&& (last_xspeed!=x_speed || last_yspeed!=y_speed 
-    if(flag==1 && (last_xspeed!=x_speed || last_yspeed!=y_speed )){
+    old_angle = angleGun;
+    angleGun = atan2(mouseY-(height/2),mouseX-(width/2));
+    
+    if((last_xspeed!=x_speed || last_yspeed!=y_speed || angleGun != old_angle)){
         if (Math.abs(old_x_pos-x_pos) <= 3 || Math.abs(old_y_pos-y_pos) <= 3){
             if (playerHp>0){
                 stompClient.send('/ws/gameState',
-                    {},
-                    JSON.stringify({x: x_pos,y:y_pos,velx:x_speed, vely:y_speed, name:clientID, r:red, g:green, b:blue,hp:playerHp, ang:angleGun,score:playScore,dpName:displayName})
-                   )
+				 {},
+				 JSON.stringify({x: x_pos,y:y_pos,velX:x_speed, velY:y_speed, uuid:clientID, gunAngle:angleGun})
+				);
             }
         }
     }
 
-     self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
+    self = {x: x_pos, y: y_pos, r: 100, g:100, b:255};
     last_xspeed=x_speed;
     last_yspeed=y_speed;
     self = {x: x_pos, y: y_pos, r: red, g:green, b:blue,hp:playerHp,ang:angleGun};
-
-
 
     if(bulletEntity!=null){
         bullets.push(bulletEntity);
@@ -336,49 +305,25 @@ function draw()
             if(!player)
                 continue;
             
-            
+	    console.log("name: " + player.name + ", health: " + player.hp);
+	    
             if (player.name == clientID)
             {
                 flag1 = 1;
                 self = {x: player.x, y: player.y, r: player.r, g: player.g, b: player.b ,hp: player.hp,ang:player.angleGun,score:player.playScore};
 		x_pos = player.x;
 		y_pos = player.y;
-        playerHp = player.hp;
-        playScore=player.score;
-
-        if(playerHp<=0){
-        
-            x_pos=-500;
-            y_pos=-500;
-            playerHp=100;
-            stompClient.send('/ws/playerJoin',
-                {},
-                JSON.stringify({messageContent: "spawn"}) //assign new location
-               )
-               console.log("player ded,respawning");
-        }
-        
-                    
+		playerHp = player.hp;
+		playScore=player.score;
             }
             
-            let elapsed = millis() - last_time;
             // player.x += player.velx * (elapsed / frame_time);
             // player.y += player.vely * (elapsed / frame_time);
             if (player.hp>0){
                 drawPlayer(player);
             }
         }
-        if(playerHp<=0){
-        
-            x_pos=-500;
-            y_pos=-500;
-            playerHp=100;
-            stompClient.send('/ws/playerJoin',
-                {},
-                JSON.stringify({messageContent: "spawn"}) //assign new location
-               )
-               console.log("player ded,respawning");
-        }
+       
     }
     
     fill(100,100,200);
@@ -402,49 +347,30 @@ function draw()
 
     last_time = millis();
 
-    //angle of the gun
-    dir_x = mouseX - screen_width/2;
-    dir_y = mouseY - screen_height/2;
-
-   
-
-    angleGun = atan2(mouseY-(height/2),mouseX-(width/2));
-
+    
+    
     //Functions called at the end of draw to avoid visiblity issue
     drawHealthDialog(playerHp);
     drawScoreDialog(playScore);
     drawtimerDialog(timer);
 
-    if(playerHp<=0){
-        
-        x_pos=-500;
-        y_pos=-500;
-        playerHp=100;
-        stompClient.send('/ws/playerJoin',
-            {},
-            JSON.stringify({messageContent: "spawn"}) //assign new location
-           )
-           console.log("player ded,respawning");
+    
+    if (frameCount % 60 == 0 ) {
+	
+	for(let i=0;i<killFeedList.length;i++){
+	    
+	    if (killFeedList[i].time == 1) {
+		killFeedList[i].killer="";
+		killFeedList[i].killed="";
+		
+	    }
+	    
+	    killFeedList[i].time--;  
+	    // console.log("time is: "+killFeedList[i].time);
+	} 
+	
     }
-
-
-    
-  if (frameCount % 60 == 0 ) {
-    
-    for(let i=0;i<killFeedList.length;i++){
-      
-  if (killFeedList[i].time == 1) {
-    killFeedList[i].killer="";
-    killFeedList[i].killed="";
-    
-  }
-  
-      killFeedList[i].time--;  
-      console.log("time is: "+killFeedList[i].time);
-    } 
-    
-  }
-  killFeed();
+    killFeed();
 
     if (timer<=0){
         showGameOver(playScore);
@@ -462,9 +388,10 @@ function drawHealthDialog(health) {
 
     // Display health text
     fill(255, 0, 0);
-    textSize(16);
+    stroke(255,0,0);
+    textSize(26);
     textAlign(CENTER, CENTER);
-    text(`Health: ${health} HP`, x + w / 2, y + h / 2);
+    text(`❤️ ${health} HP`, x + w / 2, y + h / 2);
 }
 
 function drawScoreDialog(playScore) {
@@ -476,8 +403,9 @@ function drawScoreDialog(playScore) {
     rect(x, y, w, h, 10); // Rounded corners
 
     // Display health text
-    fill(255, 0, 0);
-    textSize(16);
+    fill(0, 0, 255);
+    stroke(0,0,255);
+    textSize(26);
     textAlign(CENTER, CENTER);
     text(`Score: ${playScore}`, x + w / 2, y + h / 2);
     fill(0,0,255);
@@ -493,14 +421,14 @@ function drawtimerDialog(time) {
 
     // Display health text
     fill(255, 0, 0);
-    textSize(16);
+    stroke(255,0,0);
+    textSize(26);
     textAlign(CENTER, CENTER);
-    text(`Time Left: ${time} sec`, x + w / 2, y + h / 2);
+    text(`${time} sec`, x + w / 2, y + h / 2);
     fill(0,0,255);
 }
 
 function spawnBullet()
-
 {
 
     var mag = sqrt(dir_x * dir_x + dir_y * dir_y);
@@ -515,29 +443,11 @@ function spawnBullet()
     // bullets.push({x:x_pos + ( (dir_x/mag)*30 ),y:y_pos+ ( (dir_y/mag)*30 ),velx:vel_x,vely:vel_y});
 }
 
-// function mouseClicked()
-
-// {
-//     var dir_x = mouseX - x_pos;
-//     var dir_y = mouseY - y_pos;
-
-//     var mag = sqrt(dir_x * dir_x + dir_y * dir_y)
-
-//     var vel_x = dir_x / mag * bullet_speed;
-//     var vel_y = dir_y / mag * bullet_speed;
-//     stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
-
-//     bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y));
-// }
-
 function mouseClicked()
 {
     if (mouseButton == LEFT)
     {
         spawnBullet();
-        
-        // bullets.push(new Bullet(x_pos, y_pos, vel_x, vel_y))
-        // stompClient.send('/ws/gameBullets',{},JSON.stringify({x: x_pos,y:y_pos,velx: vel_x, vely:vel_y}));
     }
 }
 
@@ -545,42 +455,42 @@ function showGameOver(finalScore) {
     
     const overlay = document.createElement("div");
     Object.assign(overlay.style, {
-      position: "fixed",
-      top: "0",
-      left: "0",
-      width: "100vw",
-      height: "100vh",
-      backgroundColor: "rgba(235, 115, 115, 0.3)",
-      backdropFilter: "blur(3px)",          // Subtle blur effect
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: "center",
-      alignItems: "center",
-      zIndex: 9999,
-      fontFamily: "sans-serif",
-      color: "#fff",
-      textAlign: "center"
+	position: "fixed",
+	top: "0",
+	left: "0",
+	width: "100vw",
+	height: "100vh",
+	backgroundColor: "rgba(235, 115, 115, 0.3)",
+	backdropFilter: "blur(3px)",          // Subtle blur effect
+	display: "flex",
+	flexDirection: "column",
+	justifyContent: "center",
+	alignItems: "center",
+	zIndex: 9999,
+	fontFamily: "mc-font",
+	color: "#fff",
+	textAlign: "center"
     });
-  
+    
     // Game Over text
     const title = document.createElement("h1");
     title.textContent = "Game Over";
     title.style.fontSize = "4rem";
     title.style.marginBottom = "20px";
     title.style.color = "#ffffff";
-  
+    
     // Score display
     const score = document.createElement("p");
     score.textContent = `Your Score: ${finalScore}`;
     score.style.fontSize = "1.5rem";
     score.style.marginBottom = "30px";
     
-  
+    
 
     // Append elements to overlay
     overlay.appendChild(title);
     overlay.appendChild(score);
 
     document.body.appendChild(overlay);
-  }
-  
+}
+
