@@ -24,7 +24,7 @@ public class GameService{
 	//private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
 	private LocalDateTime endTime;
-	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(300);
+	LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(5*60);
 
 	public GameService()
 	{
@@ -170,10 +170,12 @@ public class GameService{
 					float current_playerHp = player.getHp();
 					if (current_playerHp == 0.0f){
 						String play_name = player.getname();
-						System.out.println(play_name+" was killed by "+bullet.getbulletID());
+						System.out.println(play_name+" killed "+bullet.getbulletID());
 						players.get(bullet.getbulletID()).incScore();
 						killFeed.put(players.get(bullet.getbulletID()).getdpName(),player.getdpName());
-						players.remove(play_name);
+						// players.remove(play_name);
+						players.get(play_name).setHp(-1);
+						
 
 
 					}
