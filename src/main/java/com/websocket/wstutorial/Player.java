@@ -46,6 +46,15 @@ public class Player {
         y += vely;
     }
 
+    public void updateData(PlayerData data)
+    {
+	this.x = data.getx();
+	this.y = data.gety();
+	this.velx = data.getvelX();
+	this.vely = data.getvelY();
+	this.ang = data.getgunAngle();
+    }
+
     public float bulletHit(){
         hp-=10;
         return hp;
@@ -68,10 +77,6 @@ public class Player {
     }
 
     public void setHp(float Hp){
-        if (hp<=0){
-            hp = 0;
-            return;
-        }
         hp=Hp;
     }
 

@@ -1,8 +1,22 @@
 @import url(https://fonts.cdnfonts.com/css/public-pixel);
+
+@font-face {
+    font-family: mc-font;
+    src:url("font.otf");
+}
+
 html, body {
     margin: 0;
     padding: 0;
-    font-family: 'Public Pixel', sans-serif;
+    font-family: mc-font;
+}
+
+input {
+    font-family: mc-font;
+}
+
+button {
+    font-family: mc-font;
 }
 
 canvas {
