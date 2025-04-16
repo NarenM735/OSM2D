@@ -54,15 +54,15 @@ public class GameService{
 	// walls.add(new Wall(922, 815, 1001, 1360));
 	// walls.add(new Wall(371, 1077, 450, 1155));
 
-	walls.add(new Wall(2090, 1623,1990, 2243));
-	walls.add(new Wall(1990, 2090,1625, 2243));
-	walls.add(new Wall(2120, 2457,2020, 2866));
-	walls.add(new Wall(2020, 2706,1810, 2866));
-	walls.add(new Wall(2366, 1753,2270, 2125));
-	walls.add(new Wall(2681, 1963,2366, 2125));
-	walls.add(new Wall(2804, 2611,2702, 2773));
-	walls.add(new Wall(2804, 2791,2702, 2998));
-	walls.add(new Wall(2862, 1966,2761, 2128)); 
+	walls.add(new Wall(1990, 1623,2090, 2243));
+	walls.add(new Wall(1625, 2090,1990, 2243));
+	walls.add(new Wall(2020, 2457,2120, 2866));
+	walls.add(new Wall(1810, 2706,2020, 2866));
+	walls.add(new Wall(2270, 1753,2366, 2125));
+	walls.add(new Wall(2366, 1963,2681, 2125));
+	walls.add(new Wall(2702, 2611,2804, 2773));
+	walls.add(new Wall(2702, 2791,2804, 2998));
+	walls.add(new Wall(2761, 1966,2862, 2128)); 
 
 	walls.add(new Wall(910, 1377,1010, 757));
 	walls.add(new Wall(1010, 910,1375, 757));
