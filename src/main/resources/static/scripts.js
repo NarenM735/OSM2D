@@ -125,7 +125,7 @@ function setup() {
 
     textFont('mc-font', 200);
     
-    backGroundImg = loadImage('/mapTest1.jpg');
+    backGroundImg = loadImage('/mapTest1.png');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
     playerimg = loadImage('/char_static.png');

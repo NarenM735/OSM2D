@@ -40,19 +40,59 @@ public class GameService{
 	// int y1 = 200;
 	// int x2 = 300;
 	// int y2 = 300;
-	walls.add(new Wall(208, 7, 287, 140));
-	walls.add(new Wall(208, 151, 287, 250));
-	walls.add(new Wall(273, 458, 412, 586));
-	walls.add(new Wall(149, 938, 288, 1017));
-	walls.add(new Wall(330, 940, 724, 1018));
-	walls.add(new Wall(645, 998, 724, 1228));
-	walls.add(new Wall(886, 134, 1179,216));
-	walls.add(new Wall(887, 206, 968, 527));
-	walls.add(new Wall(1045, 323, 1124, 401));
-	walls.add(new Wall(922, 757, 1364, 835));
-	walls.add(new Wall(922, 815, 1001, 1360));
-	walls.add(new Wall(371, 1077, 450, 1155));
 
+	// walls.add(new Wall(208, 7, 287, 140));
+	// walls.add(new Wall(208, 151, 287, 250));
+	// walls.add(new Wall(273, 458, 412, 586));
+	// walls.add(new Wall(149, 938, 288, 1017));
+	// walls.add(new Wall(330, 940, 724, 1018));
+	// walls.add(new Wall(645, 998, 724, 1228));
+	// walls.add(new Wall(886, 134, 1179,216));
+	// walls.add(new Wall(887, 206, 968, 527));
+	// walls.add(new Wall(1045, 323, 1124, 401));
+	// walls.add(new Wall(922, 757, 1364, 835));
+	// walls.add(new Wall(922, 815, 1001, 1360));
+	// walls.add(new Wall(371, 1077, 450, 1155));
+
+	walls.add(new Wall(2090, 1623,1990, 2243));
+	walls.add(new Wall(1990, 2090,1625, 2243));
+	walls.add(new Wall(2120, 2457,2020, 2866));
+	walls.add(new Wall(2020, 2706,1810, 2866));
+	walls.add(new Wall(2366, 1753,2270, 2125));
+	walls.add(new Wall(2681, 1963,2366, 2125));
+	walls.add(new Wall(2804, 2611,2702, 2773));
+	walls.add(new Wall(2804, 2791,2702, 2998));
+	walls.add(new Wall(2862, 1966,2761, 2128)); 
+
+	walls.add(new Wall(910, 1377,1010, 757));
+	walls.add(new Wall(1010, 910,1375, 757));
+	walls.add(new Wall(880, 543,980, 134));
+	walls.add(new Wall(980, 294,1190, 134));
+	walls.add(new Wall(634, 1247,730, 875));
+	walls.add(new Wall(319, 1037,634, 875));
+	walls.add(new Wall(196, 389,298, 227));
+	walls.add(new Wall(196, 209,298, 2));
+	walls.add(new Wall(138, 1034,239, 872));
+	walls.add(new Wall(2090, 1377,1990, 757));
+	walls.add(new Wall(1990, 910,1625, 757));
+	walls.add(new Wall(2120, 543,2020, 134));
+	walls.add(new Wall(2020, 294,1810, 134));
+	walls.add(new Wall(2366, 1247,2270, 875));
+	walls.add(new Wall(2681, 1037,2366, 875));
+	walls.add(new Wall(2804, 389,2702, 227));
+	walls.add(new Wall(2804, 209,2702, 2));
+	walls.add(new Wall(2862, 1034,2761, 872));
+	
+	walls.add(new Wall(910,  1623,1010, 2243));
+	walls.add(new Wall(1010, 2090,1375, 2243));
+	walls.add(new Wall(880, 2457,980, 2866));
+	walls.add(new Wall(980,  2706,1190, 2866));
+	walls.add(new Wall(634, 1753,730, 2125));
+	walls.add(new Wall(319, 1963,634, 2125));
+	walls.add(new Wall(196, 2611,298, 2773));
+	walls.add(new Wall(196, 2791,298, 2998));
+	walls.add(new Wall(138, 1966,239, 2128));
+	
     }
 
     public Point getRandomSpawnPoint()
