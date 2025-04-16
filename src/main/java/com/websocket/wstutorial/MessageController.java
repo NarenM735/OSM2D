@@ -128,10 +128,12 @@ public class MessageController {
 
 
     
-    @Scheduled(fixedRate = 16)
+    @Scheduled(fixedRate =16 )
     public void sendPlayerList() throws InterruptedException {
 	simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList()); 
         if(LocalDateTime.now().isAfter(gameService.tenSecTest)){
+            simpMessagingTemplate.convertAndSend("/topic/getLeader", gameService.computeLeader()); 
+            System.out.print(gameService.computeLeader().getdpName());
             gameService.nukePlayers();
         }      
 

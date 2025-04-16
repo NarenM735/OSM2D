@@ -28,7 +28,7 @@ public class GameService{
     //private final Logger LOG = LoggerFactory.getLogger(GameService.class);
 
     private LocalDateTime endTime;
-    LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(300);
+    LocalDateTime tenSecTest = LocalDateTime.now().plusSeconds(30);
 
     public GameService()
     {
@@ -90,6 +90,21 @@ public class GameService{
     public void addBullet(Bullet bullet){
 	bullets.add(bullet);
     }
+
+	public Player computeLeader(){
+		int maxScore=-1;
+		Player leader=new Player();
+		for (Map.Entry<String, Player> entry : players.entrySet()){
+			if(maxScore<entry.getValue().getscore()){
+				maxScore=entry.getValue().getscore();
+				leader.setdpName(entry.getValue().getdpName());
+				leader.setscore(maxScore);
+			}
+		}
+
+		return leader;
+		
+	}
 
     public void updateBullets()
     {
@@ -248,7 +263,7 @@ public class GameService{
     public boolean shouldStartTimer() {
 	if (!players.isEmpty() && endTime == null)
 	{
-	    endTime = LocalDateTime.now().plusSeconds(300);
+	    endTime = LocalDateTime.now().plusSeconds(30);
 	    tenSecTest = endTime;
 	}
 	return endTime != null;

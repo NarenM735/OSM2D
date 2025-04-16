@@ -15,6 +15,7 @@ var points = 0;
 let timer=300;
 var scale_x=1;
 var scale_y=1;
+var Leader;
 
 
 function startGame() {
@@ -50,7 +51,7 @@ var self = {x: x_pos, y: y_pos, r: 100, g:100, b:255,ang:angleGun};
 function connect() {
     var socket = new SockJS('/our-websocket');
     stompClient = Stomp.over(socket);
-    stompClient.debug = null;
+    // stompClient.debug = null; 
     
     stompClient.connect({}, function (frame) {
         clientID = frame.headers["user-name"];
@@ -76,7 +77,10 @@ function connect() {
         stompClient.subscribe('/topic/timerFunction', function(message) {
             timer = JSON.parse(message.body);
             // console.log("Remaining time (in seconds):", timer);
-        });        
+        });   
+        stompClient.subscribe('/topic/getLeader', function(message) {
+            Leader = JSON.parse(message.body);
+        });       
     });
 
 }
@@ -125,7 +129,7 @@ function setup() {
 
     textFont('mc-font', 200);
     
-    backGroundImg = loadImage('/mapTest1.jpg');
+    backGroundImg = loadImage('/mapTest1.png');
     gunImg=loadImage('/gun.png');
     image(backGroundImg,0,0);
     playerimg = loadImage('/char_static.png');
@@ -324,6 +328,8 @@ function draw()
 		playerHp = player.hp;
 		playScore=player.score;
             }
+
+            
             
             // player.x += player.velx * (elapsed / frame_time);
             // player.y += player.vely * (elapsed / frame_time);
@@ -471,7 +477,7 @@ function showGameOver(finalScore) {
 	width: "100vw",
 	height: "100vh",
 	backgroundColor: "rgba(235, 115, 115, 0.3)",
-	backdropFilter: "blur(3px)",          // Subtle blur effect
+	// backdropFilter: "blur(3px)",          // Subtle blur effect
 	display: "flex",
 	flexDirection: "column",
 	justifyContent: "center",
@@ -496,10 +502,17 @@ function showGameOver(finalScore) {
     score.style.marginBottom = "30px";
     
     
+    const leader = document.createElement("p");
+    leader.textContent = `Leader: ${leader.dpName}`;
+    leader.textContent = `Score: ${leader.score}`;
+    leader.style.fontSize = "1.5rem";
+    leader.style.marginBottom = "40px";
+    
 
     // Append elements to overlay
     overlay.appendChild(title);
     overlay.appendChild(score);
+    overlay.appendChild(leader);
 
     document.body.appendChild(overlay);
 }
