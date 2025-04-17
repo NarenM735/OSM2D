@@ -389,7 +389,10 @@ function draw()
     killFeed();
 
     if (timer<=0){
-        showGameOver(playScore);
+        noLoop();
+        CreatingLeaderBoard(players);
+        
+        
     }
     
 }
@@ -400,30 +403,30 @@ function drawHealthDialog(health) {
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
     stroke(255);
-    rect(x, y, w*scale_x, h*scale_y, 10); // Rounded corners
+    rect(x, y, w*(Math.min(scale_x,scale_y)), h*(Math.min(scale_x,scale_y)), 10); // Rounded corners
 
     // Display health text
     fill(255, 0, 0);
     stroke(255,0,0);
-    textSize(26);
+    textSize(28*Math.min(scale_x,scale_y));
     textAlign(CENTER, CENTER);
-    text(`❤️ ${health} HP`, x + (w*scale_x) / 2, y + (h*scale_y) / 2);
+    text(`❤️ ${health} HP`, x + (w*(Math.min(scale_x,scale_y))) / 2, y + (h*(Math.min(scale_x,scale_y))) / 2);
 }
 
 function drawScoreDialog(playScore) {
-    let x = width-210, y = 20, w = 180, h = 60; //1280-180
+    let x = width-240*(Math.min(scale_x,scale_y)), y = 20, w = 180, h = 60; //1280-180
 
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
     stroke(255);
-    rect(x, y, w*scale_x, h*scale_y, 10); // Rounded corners
+    rect(x, y, w*(Math.min(scale_x,scale_y)), h*(Math.min(scale_x,scale_y)), 10); // Rounded corners
 
     // Display health text
     fill(0, 0, 255);
     stroke(0,0,255);
-    textSize(26);
+    textSize(28*Math.min(scale_x,scale_y));
     textAlign(CENTER, CENTER);
-    text(`Score: ${playScore}`, x + (w*scale_x) / 2, y + (h*scale_y) / 2)
+    text(`Score: ${playScore}`, x + (w*(Math.min(scale_x,scale_y))) / 2, y + (h*(Math.min(scale_x,scale_y))) / 2)
     fill(0,0,255);
 }
 
@@ -433,14 +436,14 @@ function drawtimerDialog(time) {
     // Draw dialog background
     fill(50, 50, 50, 200); // Semi-transparent dark box
     stroke(255);
-    rect(x, y, w*scale_x, h*scale_y, 10); // Rounded corners
+    rect(x, y, w*(Math.min(scale_x,scale_y)), h*(Math.min(scale_x,scale_y)), 10); // Rounded corners
 
     // Display health text
     fill(255, 0, 0);
     stroke(255,0,0);
-    textSize(26);
+    textSize(28*Math.min(scale_x,scale_y));
     textAlign(CENTER, CENTER);
-    text(`${time} sec`, x + (w*scale_x) / 2, y + (h*scale_y) / 2)
+    text(`${time} sec`, x + (w*(Math.min(scale_x,scale_y))) / 2, y + (h*(Math.min(scale_x,scale_y))) / 2)
     fill(0,0,255);
 }
 
@@ -467,53 +470,67 @@ function mouseClicked()
     }
 }
 
-function showGameOver(finalScore) {
-    
+function CreatingLeaderBoard(players){
+    players.sort(function(a,b){return b.score-a.score});
+    showGameOver(playScore,players);
+}
+
+function showGameOver(finalScore, leaderboard) {
     const overlay = document.createElement("div");
     Object.assign(overlay.style, {
-	position: "fixed",
-	top: "0",
-	left: "0",
-	width: "100vw",
-	height: "100vh",
-	backgroundColor: "rgba(235, 115, 115, 0.3)",
-	// backdropFilter: "blur(3px)",          // Subtle blur effect
-	display: "flex",
-	flexDirection: "column",
-	justifyContent: "center",
-	alignItems: "center",
-	zIndex: 9999,
-	fontFamily: "mc-font",
-	color: "#fff",
-	textAlign: "center"
+        position: "fixed",
+        top: "0",
+        left: "0",
+        width: "100vw",
+        height: "100vh",
+        backgroundColor: "rgba(235, 115, 115, 0.3)",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        alignItems: "center",
+        zIndex: 9999,
+        fontFamily: "mc-font",
+        color: "#fff",
+        textAlign: "center"
     });
-    
-    // Game Over text
+
     const title = document.createElement("h1");
     title.textContent = "Game Over";
     title.style.fontSize = "4rem";
     title.style.marginBottom = "20px";
     title.style.color = "#ffffff";
-    
-    // Score display
+
     const score = document.createElement("p");
     score.textContent = `Your Score: ${finalScore}`;
     score.style.fontSize = "1.5rem";
     score.style.marginBottom = "30px";
-    
-    
-    const leader = document.createElement("p");
-    leader.textContent = `Leader: ${leader.dpName}`;
-    leader.textContent = `Score: ${leader.score}`;
-    leader.style.fontSize = "1.5rem";
-    leader.style.marginBottom = "40px";
-    
 
-    // Append elements to overlay
+    // Leaderboard title
+    const leaderboardTitle = document.createElement("h2");
+    leaderboardTitle.textContent = "Leaderboard";
+    leaderboardTitle.style.fontSize = "2rem";
+    leaderboardTitle.style.marginBottom = "15px";
+
+    // Leaderboard container
+    const leaderboardContainer = document.createElement("div");
+    leaderboardContainer.style.display = "flex";
+    leaderboardContainer.style.flexDirection = "column";
+    leaderboardContainer.style.alignItems = "center";
+    leaderboardContainer.style.gap = "8px";
+
+    // Add each leader entry
+    leaderboard.forEach((entry, index) => {
+        const entryEl = document.createElement("p");
+        entryEl.textContent = `${index + 1}. ${entry.dpName} - ${entry.score}`;
+        entryEl.style.fontSize = "1.2rem";
+        leaderboardContainer.appendChild(entryEl);
+    });
+
+    // Append all elements to the overlay
     overlay.appendChild(title);
     overlay.appendChild(score);
-    overlay.appendChild(leader);
+    overlay.appendChild(leaderboardTitle);
+    overlay.appendChild(leaderboardContainer);
 
     document.body.appendChild(overlay);
 }
-

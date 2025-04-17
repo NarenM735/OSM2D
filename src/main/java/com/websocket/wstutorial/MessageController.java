@@ -172,7 +172,7 @@ public class MessageController {
 	List<Player> playersToBeStopped = gameService.checkPlayerOutOfBounds();
 	gameService.checkPlayerWallCollisions();
 	
-	if (!playersToBeStopped.isEmpty())
+	if (!playersToBeStopped.isEmpty() && LocalDateTime.now().isBefore(gameService.tenSecTest))
 	{
 	    simpMessagingTemplate.convertAndSend("/topic/gameState", gameService.getPlayerList());
 	}
